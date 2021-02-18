@@ -1,0 +1,117 @@
+/**/
+/*
+    Sticker Design Area
+*/
+#sb_sticker_area{
+    position: relative;
+    width: 100%;
+    overflow: visible;
+}
+    #sticker_canvas{
+        width: 100%;
+        padding: 5%;
+        height: calc(1.41*100vw);
+        background-color: #eee;
+        border: solid 1px #444;
+    }
+
+    #sticker_area_controls{
+        text-align: right;
+        margin: 5px;
+    }
+
+    /*
+        Sticker Set
+    */
+    .sticker_set{
+        position: relative;
+        float: left;
+        width: 48.8%;
+        margin: .3%;
+        height: 19.4%;
+        transition: all .8s;
+    }
+    .sticker_set:hover{
+        box-shadow: 0 0 5px 2px #444;
+    }
+        .sticker_set_controls{
+            position: absolute;
+            width: 100%;
+            height: 50px;
+            top: 0px;
+            opacity: 0;
+            background: #ccc;
+            padding: 5px;
+            border-radius: 5px 5px 0 0;
+            text-align: center;
+            border: solid 1px #444;
+            border-bottom: none;
+            transition: all .4s;
+        }
+        .sticker_set:hover .sticker_set_controls{
+            top: -51px;
+            opacity: 1;
+        }
+
+        .sticker_outer{
+            position: relative;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            padding: 1%;
+            border: solid 1px #000;
+            background-color: #fff;
+
+            overflow: hidden;
+        }
+
+        .sticker_inner{
+            position: relative;
+            height: 100%;
+            width: 100%;
+            border: dashed 1px #444;
+        }
+            .sticker_image{
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+            }
+                .sticker_image_addcontrols{
+                    position: relative;
+                    margin: auto auto;
+                    width: 150px;
+                    min-height: 100px;
+                    padding: 5px;
+                    border-radius: 5px;
+                    margin-top: 10%;
+                    background-color: #eee;
+                    opacity: .6;
+                    transition: all .4s;
+                }
+                .sticker_set:hover .sticker_image_addcontrols{
+                    opacity: 1;
+                }
+                    .sbac_add_image{
+                        position: relative;
+                        text-align: center;
+                        margin: auto;
+                        cursor: pointer;
+                        transition: all .4s;
+                        border-radius: 5px;
+                    }
+                    .sbac_add_image:hover{
+                        box-shadow: 0 0 8px 3px #ddd;
+                    }
+                    .sbac_add_image i{
+                        font-size: 40pt;
+                    }
+                    .sbac_add_image .add_img_txt{
+                        font-size: 14pt;
+                    }
+                    .sbac_add_image .add_img_txt,
+                    .sbac_add_image .add_img_desc{
+                        opacity: .6;
+                    }

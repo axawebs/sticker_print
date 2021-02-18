@@ -1,0 +1,104 @@
+
+#admin-title{
+    color:teal;
+}
+#admin-title span{
+    font-size: 10pt;
+    color:#999;
+}
+
+#ac_table thead th{
+    font-size: 11pt;
+    color:#fff;
+}
+#ac_table td{
+    font-size: 10pt;
+}
+
+.ac_img_int button, 
+.ac_img_ext button,
+.ac_actions button{
+    position: relative;
+    width: 25px;
+    padding: 2px;
+    float: left;
+    margin:.5%;
+}
+.ac_img_int button, 
+.ac_img_ext button,
+.ac_img_edit{
+    width: 100% !important;
+}
+
+.ac_img_change,
+.ac_img_save,
+.ac_img_cancel{
+    display: none;
+}
+
+.editable_row .ac_img_view,
+.editable_row .ac_img_edit{
+    display: none;
+}
+
+.editable_row .ac_img_save,
+.editable_row .ac_img_cancel,
+.editable_row .ac_img_change
+{
+    display: block;
+}
+
+#ac_table input{
+    pointer-events: none;
+    background-color: #ccc;
+    color: #000;
+}
+
+#ac_table .editable_row input{
+    pointer-events: auto;
+    background-color: #fff;
+    color: #000;
+    font-weight: 600;
+}
+
+.aircraft_row, 
+.ac_img_int, 
+.ac_img_ext{
+    transition: all .5s;
+}
+.redback{
+    background-color: #c66 !important;
+}
+.redback>button{
+    background-color:#c66;
+    pointer-events: none;
+}
+
+.lang_tab_link{
+    display: inline;
+    margin-left:2px;
+}
+
+#language_select_row, 
+#settings_buttons_row{
+    margin-bottom:10px; 
+    background-color:#eee; 
+    padding:5px; 
+    border-radius:5px
+}
+
+.lang_tab{
+    display: none;
+    padding: 15px;
+    pointer-events: none;
+}
+.lang_tab.lg_active{
+    display: block;
+    pointer-events: auto;
+}
+.lg_active.redback input,
+#settings_row.redback input{
+    pointer-events: none;
+    background-color: #ccc;
+}
+
