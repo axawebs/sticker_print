@@ -247,24 +247,20 @@ class stickerprint
             wp_enqueue_style( 'bootstrap4_css', plugins_url('/assets/bootstrap4/bootstrap_4_5_2_min.css',__FILE__),80);
             wp_enqueue_script( 'bootstrap_bundle_scripts', plugins_url('/assets/bootstrap4/bootstrap.bundle.min.js',__FILE__), array('jquery'));
             wp_enqueue_script( 'bootstrap_input_spinner', plugins_url('/assets/bootstrap4/bootstrap-input-spinner.js',__FILE__), array('bootstrap_bundle_scripts'));
-            //FLatpicker
-            wp_enqueue_style( 'flatpickr_styles', plugins_url('/assets/flatpicker/flatpickr.min.css',__FILE__),81);
-            wp_enqueue_script( 'flatpickr_scripts', plugins_url('/assets/flatpicker/flatpickr.js',__FILE__), array('jquery'));
-            //jQuery Autocomplete
-            wp_enqueue_script( 'jquery_autocomplete', plugins_url('/assets/jquery_autocomplete/jquery.autocomplete.min.js',__FILE__), array('jquery'));
+            
             //Font-Awesome
             wp_enqueue_style( 'fontawesome_css', plugins_url('/assets/font_awesome/css/font-awesome.css',__FILE__),90);
             //Select2
             wp_enqueue_style( 'stickerprint_select2_styles', plugins_url('/assets/select2/select2.css',__FILE__),98);
             wp_enqueue_script( 'stickerprint_select2_scripts', plugins_url('/assets/select2/select2.full.js',__FILE__), array('jquery'));
             //DropzoneJs
-            wp_enqueue_style( 'stickerprint_dropzone_styles', plugins_url('/assets/dropzonejs/select2.css',__FILE__),98);
-            wp_enqueue_script( 'stickerprint_dropzone_scripts', plugins_url('/assets/dropzonejs/select2.full.js',__FILE__
+            wp_enqueue_style( 'stickerprint_dropzone_styles', plugins_url('/assets/dropzonejs/dropzone.css',__FILE__),98);
+            wp_enqueue_script( 'stickerprint_dropzone_scripts', plugins_url('/assets/dropzonejs/dropzone.js',__FILE__), array('jquery'));
             //Common CSS
             wp_enqueue_style( 'stickerprint_common_styles', plugins_url('/assets/common.css',__FILE__),101);
 
             //FrontEnd scripts and styles
-            wp_enqueue_script( 'stickerprint_script', plugins_url('/assets/stickerprint_scripts.js',__FILE__), array('stickerprint_select2_scripts','flatpickr_scripts','fuse_scripts','jquery'));
+            wp_enqueue_script( 'stickerprint_script', plugins_url('/assets/stickerprint_scripts.js',__FILE__), array('stickerprint_select2_scripts','flatpickr_scripts','stickerprint_dropzone_scripts','jquery'));
         }
     }
 

@@ -1,7 +1,18 @@
 <?php
+ 
+if (!empty($_FILES)) {
+     
+    $tempFile = $_FILES['file']['tmp_name'];          //3             
+      
+    $targetPath = '../assets/images/';  //4
+     
+    $targetFile =  $targetPath.$_FILES['file']['name'];  //5
+ 
+    move_uploaded_file($tempFile,$targetFile); //6
+     
+}
 
-//var_dump($_POST);
-
+/*
 $row_id = (int)$_POST["ac_row"];
 $img_type = $_POST["img_type"];
 
@@ -41,5 +52,5 @@ $return = array("upload"=>$upload, "upload_msg"=>$msg, "filename"=>$filename);
 
 $return = json_encode($return);
 echo ($return);
-
+*/
 ?>

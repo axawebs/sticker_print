@@ -11,7 +11,7 @@ if (! defined( 'ABSPATH') ){
     // Append the host(domain name, ip) to the URL.   
     $site_host.= $_SERVER['HTTP_HOST'];
 
-    $plugin_url = $site_host."/wp-content/plugins/flight_booking/";
+    $plugin_url = $site_host."/wp-content/plugins/sticker_print/";
 ?>
 
 <?php
@@ -24,11 +24,15 @@ if (! defined( 'ABSPATH') ){
             <button class="btn btn-secondary sbcs_print_single"><i class="fa fa-print"></i></button>
         </div>
         <div class="sticker_outer">
-            <div class="sticker_inner">
+            <div class="sticker_image_holder">
+                <img class="sn_image"/>
             </div>
-            <div class="sticker_image">
-                <div class="sticker_image_addcontrols">
-                    <div class="sbac_add_image"><i>&plus;</i> <br> <span class="add_img_txt">Add Image</span> <span class="add_img_desc">Upload or drag your image here.</span></div>
+            <div class="sticker_inner">
+                <div class="sticker_image_dropzone"></div>
+                <div class="sticker_image_notice">
+                    <div class="sticker_image_addcontrols">
+                        <div class="sbac_add_image"><i>&plus;</i> <br> <span class="add_img_txt"></span> <span class="add_img_desc">Click or drag your image here to upload.</span></div>
+                    </div>
                 </div>
             </div>
         </div>

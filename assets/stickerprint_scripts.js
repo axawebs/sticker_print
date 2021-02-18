@@ -2,7 +2,7 @@
 //--- jQuery No Conflict
 
 //Global Variables
-var ajax_url = '/wp-content/plugins/flight_booking/ajax_php/';
+var ajax_url = '/wp-content/plugins/sticker_print/ajax_php/';
 
 /**
  * 
@@ -19,6 +19,8 @@ $(document).ready(function() {
 
   //UI Settings
   ui_settings();
+
+  dropzone_settings();
 
 });
 
@@ -43,5 +45,58 @@ function ui_settings(){
   });
 }
 
+
+
+/**
+ * 
+ * Dropzone settings
+ */
+function dropzone_settings(){
+  
+  $(".sticker_image_dropzone").dropzone({ 
+    url: ajax_url+"file_upload.php",
+    createImageThumbnails: false,
+    resizeQuality: 1,
+    maxFiles: 1,
+    acceptedFiles: 'image/*',
+    capture: 'image/*',
+    dragenter: drag_enter,
+    dragleave: drag_left,
+    dragend: drag_ended,
+    renameFile: function(e){
+      return e.name = Date.now()+'_'+e.name;
+    },
+    complete: upload_complete,
+  });
+
+  function drag_enter(){
+    let element = $(this)[0].element;
+    $(element).closest('.sticker_outer').addClass('image_in_dropzone');
+  }
+
+  function drag_left(){
+    let element = $(this)[0].element;
+    $(element).closest('.sticker_outer').removeClass('image_in_dropzone');
+  }
+
+  function drag_ended(){
+    $('.sticker_outer').each(function(){
+      $(this).removeClass('image_in_dropzone');
+    });
+  }
+
+  function upload_complete(e){
+    console.log(e);
+    if (e.status=="success"){
+      $(e.previewElement).closest('.sticker_outer').removeClass('image_in_dropzone');
+      $(e.previewElement).closest('.sticker_outer').addClass('image_uploaded');
+      $(e.previewElement).closest('.sticker_outer').find('.sn_image')
+        .attr('src',window.plugin_url+'assets/images/'+e.upload.filename);
+    }
+  }
+
+
+
+}
 //--- jQuery No Conflict
 })(jQuery);
