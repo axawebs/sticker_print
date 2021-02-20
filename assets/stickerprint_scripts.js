@@ -43,6 +43,23 @@ function ui_settings(){
     document.getElementById("mySidebar").style.width = "0";
     document.getElementById("main").style.marginLeft = "0";
   });
+
+  //Adjust Canvas
+  adjust_canvas();
+  $(window).on('resize', function(){
+    adjust_canvas();
+  });
+
+  function adjust_canvas(){
+    let win = $(this); //this = window
+
+      width = $('#sb_sticker_area').width();
+      if (width >= 800) { width=800 }
+      let height = width*1.41;
+
+      $('#sticker_canvas').css('width',width+'px');
+      $('#sticker_canvas').css('height',height+'px');
+  }
 }
 
 
@@ -59,7 +76,7 @@ function dropzone_settings(){
     resizeQuality: 1,
     maxFiles: 1,
     acceptedFiles: 'image/*',
-    capture: 'image/*',
+    //capture: 'image/*',
     dragenter: drag_enter,
     dragleave: drag_left,
     dragend: drag_ended,
@@ -93,6 +110,19 @@ function dropzone_settings(){
       $(e.previewElement).closest('.sticker_outer').find('.sn_image')
         .attr('src',window.plugin_url+'assets/images/'+e.upload.filename);
     }
+    
+    reset_image_set_ui_functions(e);
+    this.removeAllFiles(true); 
+  }
+
+  function reset_image_set_ui_functions(e){
+
+    $(e.previewElement).closest('.sticker_set').find('.sticker_set_controls .sbcs_remove').off().on('click', function(){
+      $(this).closest('.sticker_set').find('.sticker_outer').removeClass('image_uploaded');
+      $(this).closest('.sticker_set').find('.sticker_outer').removeClass('image_in_dropzone');
+      $(this).closest('.sticker_set').find('.sn_image').attr('src','');
+      $(this).closest('.sticker_set').find('.dz-preview').remove();    
+    });
   }
 
 

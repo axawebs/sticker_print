@@ -31,7 +31,7 @@ if (! defined( 'ABSPATH') ){
                 <div class="sticker_image_dropzone"></div>
                 <div class="sticker_image_notice">
                     <div class="sticker_image_addcontrols">
-                        <div class="sbac_add_image"><i>&plus;</i> <br> <span class="add_img_txt"></span> <span class="add_img_desc">Click or drag your image here to upload.</span></div>
+                        <div class="sbac_add_image"><i class="fa fa-plus-circle"></i> <br> <span class="add_img_desc">Click or drag your image here to upload.</span></div>
                     </div>
                 </div>
             </div>
