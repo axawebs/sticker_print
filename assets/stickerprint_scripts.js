@@ -83,6 +83,7 @@ function dropzone_settings(){
     renameFile: function(e){
       return e.name = Date.now()+'_'+e.name;
     },
+    uploadprogress: log_progress,
     complete: upload_complete,
   });
 
@@ -102,6 +103,15 @@ function dropzone_settings(){
     });
   }
 
+  function log_progress(e, progress){
+    if (progress>0 && progress<100){
+      let progress_new = Math.round(progress);
+      $(e.previewElement).closest('.sticker_image_dropzone').find('.progress_handle').show();
+      $(e.previewElement).closest('.sticker_image_dropzone').find('.progress_bar_percent').html(progress_new+' %');
+      $(e.previewElement).closest('.sticker_image_dropzone').find('.progress_bar_inner').css('width',progress_new+'%');
+    }
+  }
+
   function upload_complete(e){
     console.log(e);
     if (e.status=="success"){
@@ -110,7 +120,7 @@ function dropzone_settings(){
       $(e.previewElement).closest('.sticker_outer').find('.sn_image')
         .attr('src',window.plugin_url+'assets/images/'+e.upload.filename);
     }
-    
+    $(e.previewElement).closest('.sticker_image_dropzone').find('.progress_handle').hide();
     reset_image_set_ui_functions(e);
     this.removeAllFiles(true); 
   }

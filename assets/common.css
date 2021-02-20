@@ -155,3 +155,53 @@
     .image_uploaded .sticker_inner{
         opacity: 0;
     }
+
+    .dz-preview .dz-details,
+    .dz-preview .dz-success-mark{
+        display: none;
+    }
+
+    .dz-preview .dz-error-message{
+        font-size: 10pt;
+    }
+    .dz-preview .dz-error-mark{
+        display: none;
+    }
+
+    .progress_handle {
+        position: absolute;
+        padding: 5%;
+        text-align: center;
+        width: 100%;
+        top: 40%;
+        display: none;
+    }
+
+    .progress_bar_outer{
+        position: absolute;
+        padding: 2px;
+        width: 90%;
+        height: 30px;
+        background-color: #fff;
+        border-radius: 5px;
+        border: solid 2px #444;
+        box-shadow: 0 0 5px 2px #ccc;
+    }
+
+    .progress_bar_inner{
+        position:absolute;
+        left: 0;
+        top: 0;
+        height: 22px;
+        margin: 2px;
+        width: 5%;
+        background-color: #20b2aa;
+        z-index: 0;
+    }
+
+    .progress_bar_percent{
+        position: absolute;
+        right: 10px;
+        color: #000;
+        z-index: 1;
+    }

@@ -28,7 +28,14 @@ if (! defined( 'ABSPATH') ){
                 <img class="sn_image"/>
             </div>
             <div class="sticker_inner">
-                <div class="sticker_image_dropzone"></div>
+                <div class="sticker_image_dropzone">
+                    <div class="progress_handle">
+                        <div class="progress_bar_outer">
+                            <div class="progress_bar_inner"></div>
+                            <div class="progress_bar_percent">0%</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="sticker_image_notice">
                     <div class="sticker_image_addcontrols">
                         <div class="sbac_add_image"><i class="fa fa-plus-circle"></i> <br> <span class="add_img_desc">Click or drag your image here to upload.</span></div>
