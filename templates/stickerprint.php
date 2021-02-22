@@ -24,8 +24,9 @@ if (! defined( 'ABSPATH') ){
             <button class="btn btn-secondary sbcs_print_single"><i class="fa fa-print"></i></button>
         </div>
         <div class="sticker_outer">
-            <div class="sticker_boarder_outer"></div>
-            <div class="sticker_boarder_inner"></div>
+            <div class="sticker_boarder_outer">
+                <div class="sticker_boarder_inner"></div>
+            </div>
             <div class="sticker_image_holder">
                 <img class="sn_image"/>
             </div>
@@ -46,7 +47,6 @@ if (! defined( 'ABSPATH') ){
             </div>
         </div>
     </div>';
-
 ?>
 
 <div id="plugin_settings" style="display:none">

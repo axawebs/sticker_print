@@ -254,17 +254,20 @@ class stickerprint
 
             //Font-Awesome
             wp_enqueue_style( 'fontawesome_css', plugins_url('/assets/font_awesome/css/font-awesome.css',__FILE__),90);
-            //Select2
-            wp_enqueue_style( 'stickerprint_select2_styles', plugins_url('/assets/select2/select2.css',__FILE__),98);
-            wp_enqueue_script( 'stickerprint_select2_scripts', plugins_url('/assets/select2/select2.full.js',__FILE__), array('jquery'));
+
             //DropzoneJs
             wp_enqueue_style( 'stickerprint_dropzone_styles', plugins_url('/assets/dropzonejs/dropzone.css',__FILE__),98);
             wp_enqueue_script( 'stickerprint_dropzone_scripts', plugins_url('/assets/dropzonejs/dropzone.js',__FILE__), array('jquery'));
+
+            //PrintJs
+            wp_enqueue_style( 'stickerprint_printjs_styles', plugins_url('/assets/printjs/print.min.css',__FILE__),98);
+            wp_enqueue_script( 'stickerprint_printjs_scripts', plugins_url('/assets/printjs/print.min.js',__FILE__), array('jquery'));
+
             //Common CSS
             wp_enqueue_style( 'stickerprint_common_styles', plugins_url('/assets/common.css',__FILE__),101);
 
             //FrontEnd scripts and styles
-            wp_enqueue_script( 'stickerprint_script', plugins_url('/assets/stickerprint_scripts.js',__FILE__), array('stickerprint_select2_scripts','stickerprint_dropzone_scripts','jquery'));
+            wp_enqueue_script( 'stickerprint_script', plugins_url('/assets/stickerprint_scripts.js',__FILE__), array('stickerprint_printjs_scripts','stickerprint_dropzone_scripts','jquery'));
         }
     }
 

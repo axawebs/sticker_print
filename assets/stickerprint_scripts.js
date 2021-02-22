@@ -117,41 +117,150 @@ function dropzone_settings(){
     if (e.status=="success"){
       $(e.previewElement).closest('.sticker_outer').removeClass('image_in_dropzone');
       $(e.previewElement).closest('.sticker_outer').addClass('image_uploaded');
-      $(e.previewElement).closest('.sticker_outer').find('.sn_image')
-        .attr('src',window.plugin_url+'assets/images/'+e.upload.filename);
+      
+      let image_url = window.plugin_url+'assets/images/'+e.upload.filename;
+      $(e.previewElement).closest('.sticker_outer').find('.sn_image').attr('src',image_url);
+      $(e.previewElement).closest('.sticker_outer').find('.sn_image').attr('style','');
+
     }
     $(e.previewElement).closest('.sticker_image_dropzone').find('.progress_handle').hide();
-    reset_image_set_ui_functions(e);
+    reset_image_set_ui_functions(e.previewElement);
     this.removeAllFiles(true); 
   }
 
+
+
+
+
+
+
   function reset_image_set_ui_functions(e){
 
-    $(e.previewElement).closest('.sticker_set').find('.sticker_set_controls .sbcs_remove').off().on('click', function(){
-      $(this).closest('.sticker_set').find('.sticker_outer').removeClass('image_uploaded');
-      $(this).closest('.sticker_set').find('.sticker_outer').removeClass('image_in_dropzone');
-      $(this).closest('.sticker_set').find('.sn_image').attr('src','');
-      $(this).closest('.sticker_set').find('.dz-preview').remove();    
+    // If remove button clicked
+    let sticker_set = $(e).closest('.sticker_set');
+    sticker_set.find('.sticker_set_controls .sbcs_remove').off().on('click', function(){
+      sticker_set.find('.sticker_outer').removeClass('image_uploaded');
+      sticker_set.find('.sticker_outer').removeClass('image_in_dropzone');
+      sticker_set.find('.dz-preview').remove();
+      sticker_set.children('.ui-wrapper').remove();
+      sticker_set.children('.sn_image').remove();
+      sticker_set.find('.sticker_image_holder').append('<img class="sn_image"/>');
+
+      if ( sticker_set.find('.sticker_outer .sn_image').hasClass('ui-resizable') ){
+        sticker_set.find('.sticker_outer .sn_image').resizable('destroy');
+      }
+
+      if ( sticker_set.find('.sticker_outer .sn_image').parent().hasClass('ui-draggable') ){
+        sticker_set.find('.sticker_outer .sn_image').parent().draggable('destroy');
+      }
     });
 
-    $(e.previewElement).closest('.sticker_set').find('.sticker_set_controls .sbcs_rotate_resize').off().on('click', function(){
+
+    // If rotate resize clicked
+    $(e).closest('.sticker_set').find('.sticker_set_controls .sbcs_rotate_resize').off().on('click', function(){
+
+      if ( $(this).closest('.sticker_set').find('.sticker_outer').hasClass('image_uploaded') ){
+
+        $(this).closest('.sticker_set').addClass('image_on_edit');
+        let resize = $(this).closest('.sticker_set').find('.sn_image');
+
+        resize.resizable({
+          handles: 'ne, se, sw, nw',
+          //aspectRatio: resize.width()/resize.height(),
+        });
+        resize.parent().draggable({
+            stack: "div",
+            disabled: false
+        });
+        resize.parent().css( 'pointer-events','auto' );
+        resize.parent().append('<button class="btn btn-success sn_edit_done"><i class="fa fa-check"></i> Done</button>');
+
+
+        // done editing
+        resize.parent().find('.sn_edit_done').off().on('click',function(){
+          $(this).closest('.sticker_set').removeClass('image_on_edit');
+          $(this).remove();
+          resize.parent().css( 'pointer-events','none' );
+          resize.parent().draggable('destroy');
+        });
+
+        /*
+        resize.rotate({
+            bind: {
+                dblclick: function() {
+                    $(this).data('angle', $(this).data('angle')+90);
+                    var w = $(this).css('width');
+                    $(this).parent().rotate({ animateTo: $(this).data('angle')}).css({width: $(this).css('height'), height: w});
+    
+                }
+            }
+        });
+        */
+      }
+    });
+
+
+
+
+
+
+
+    //On draggable dropped to droppable
+    $( ".sticker_outer" ).droppable({
       
-      $(this).closest('.sticker_set').addClass('image_on_edit');
-      let resize = $(this).closest('.sticker_set').find('.sn_image');
-      resize.resizable({handles: 'ne, se, sw, nw'});
-      resize.parent().draggable({
-          stack: "div"
-      });
-      resize.rotate({
-          bind: {
-              dblclick: function() {
-                  $(this).data('angle', $(this).data('angle')+90);
-                  var w = $(this).css('width');
-                  $(this).parent().rotate({ animateTo: $(this).data('angle')}).css({width: $(this).css('height'), height: w});
-  
-              }
+      hoverClass: "drop_hover",
+      tolerance: "pointer",
+      
+      drop: function( event, ui ) {
+        if ( !$(this).closest('.sticker_set').hasClass('image_on_edit') ){
+          
+          let image_src = $(ui.draggable).children('img').attr('src');
+
+          // Draggable UI reset as if remove button clicked
+          $(ui.draggable).closest('.sticker_set').find('.sticker_outer').removeClass('image_uploaded');
+          $(ui.draggable).closest('.sticker_set').find('.sticker_outer').removeClass('image_in_dropzone');
+
+
+          console.log('droppble src:'+$(this).find('.sn_image').attr( 'src') );
+
+          if ( typeof ( $(this).find('.sn_image').attr( 'src') ) !== 'undefined' && $(this).find('.sn_image').attr( 'src') != ''){
+            $(ui.draggable).closest('.sticker_set').find('.sn_image').attr('src',$(this).find('.sn_image').attr( 'src'));
+            $(ui.draggable).closest('.sticker_set').find('.sn_image').attr('style','');
+            $(ui.draggable).closest('.sticker_set').find('.sticker_outer').addClass('image_uploaded');
+          }else{
+            $(ui.draggable).closest('.sticker_set').find('.sn_image').attr('src','');
           }
-      });
+
+          $(ui.draggable).closest('.sticker_set').find('.dz-preview').remove();
+
+          // Draggable specific UI reset
+            $(ui.draggable).closest('.sticker_set').removeClass('image_on_edit');
+            $(ui.draggable).find('.sn_edit_done').remove();
+            $(ui.draggable).css( 'pointer-events','none' );
+
+            $(ui.draggable).css({
+              'left': $(ui.draggable).closest('.sticker_set').find('.sticker_image_holder').css('left'),
+              'top': $(ui.draggable).closest('.sticker_set').find('.sticker_image_holder').css('top'),
+              'width':$(ui.draggable).closest('.sticker_set').find('.sticker_image_holder').css('width'),
+              'height':$(ui.draggable).closest('.sticker_set').find('.sticker_image_holder').css('height'),
+            });
+            $(ui.draggable).draggable( "destroy" );
+            $(ui.draggable).children('img').resizable("destroy");
+            
+
+            // Droppable ui set
+            console.log ( image_src );
+
+            $(this).find('.sn_image').attr( 'src',image_src );
+            $(this).find('.sn_image').attr( 'style','' );
+            $(this).closest('.sticker_outer').removeClass('image_in_dropzone');
+            $(this).closest('.sticker_outer').addClass('image_uploaded');
+            $(this).closest('.sticker_image_dropzone').find('.progress_handle').hide();
+            reset_image_set_ui_functions( $(this) );
+            
+        }
+      },
+      
     });
 
   }
