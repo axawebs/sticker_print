@@ -22,6 +22,8 @@ $(document).ready(function() {
 
   dropzone_settings();
 
+  print_sticker();
+
 });
 
 
@@ -264,9 +266,50 @@ function dropzone_settings(){
     });
 
   }
-
-
-
 }
+
+
+ /**
+   * 
+   * 
+   * Print Sticker
+   * 
+   */
+  function print_sticker(){
+
+    $('.sbcs_print_sticker').on('click', function(){
+      $('body').append('<div id="hidden_canvas"><div id="print_canvas" style="width:2480px; height:3508px; position:absolute;"></div></div>');
+      $('#print_canvas').html( $('#sb_sticker_area').html() );
+      const container = document.getElementById('print_canvas');
+      let canvas_dataurl = '';
+      
+      html2canvas(container, { allowTaint: true }).then(function (canvas) {
+        let imgsrc = canvas.toDataURL();
+        
+        printJS(imgsrc, 'image');
+      });
+
+      
+    });
+
+
+    $('.sbcs_download_sticker').on('click', function(){
+      
+      $('body').append('<div id="hidden_canvas"><div id="print_canvas" style="width:2480px; height:3508px; position:absolute;"></div></div>');
+      $('#print_canvas').html( $('#sb_sticker_area').html() );
+      const container = document.getElementById('print_canvas');
+      let canvas_dataurl = '';
+      
+      html2canvas(container, { allowTaint: true }).then(function (canvas) {
+        let link = document.createElement("a");
+        document.body.appendChild(link);
+        link.download = "sticker_highres_300dpi.jpg";
+        link.href = canvas.toDataURL();
+        link.target = '_blank';
+        link.click();
+      });
+    });
+  }
+
 //--- jQuery No Conflict
 })(jQuery);

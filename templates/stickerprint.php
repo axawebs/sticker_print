@@ -59,12 +59,13 @@ if (! defined( 'ABSPATH') ){
 
 <!-- Frontend HTML -->
 <div class="container-fluid">
-    <div id="sb_sticker_area" class="row">
+    <div class="row sb_sticker_area">
         <div id="sticker_area_controls" class="col-12">
-            <button class="btn btn-secondary sbcs_print_single"><i class="fa fa-print"></i> Print</button>
+            <button class="btn btn-secondary sbcs_download_sticker"><i class="fa fa-download"></i> Download</button>
+            <button class="btn btn-secondary sbcs_print_sticker"><i class="fa fa-print"></i> Print</button>
         </div>
 
-        <div id="sb_sticker_area" class="col-12">
+        <div id="sb_sticker_area" class="col-12 sb_sticker_area">
             <div id="sticker_canvas">
                 <?= $sticker_set ?>
                 <?= $sticker_set ?>
@@ -80,6 +81,7 @@ if (! defined( 'ABSPATH') ){
         </div>
     </div>
 
+    <!--
     <div id="sb_sticker_single" class="row">
         <div id="sb_single_controls" class="col-12">
             <button class="btn btn-secondary sbcs_add"><i class="fa fa-repeat"></i></button>
@@ -91,4 +93,5 @@ if (! defined( 'ABSPATH') ){
             </div>
         </div>
     </div>
+    -->
 </div>
