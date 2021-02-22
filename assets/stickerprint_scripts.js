@@ -133,6 +133,27 @@ function dropzone_settings(){
       $(this).closest('.sticker_set').find('.sn_image').attr('src','');
       $(this).closest('.sticker_set').find('.dz-preview').remove();    
     });
+
+    $(e.previewElement).closest('.sticker_set').find('.sticker_set_controls .sbcs_rotate_resize').off().on('click', function(){
+      
+      $(this).closest('.sticker_set').addClass('image_on_edit');
+      let resize = $(this).closest('.sticker_set').find('.sn_image');
+      resize.resizable({handles: 'ne, se, sw, nw'});
+      resize.parent().draggable({
+          stack: "div"
+      });
+      resize.rotate({
+          bind: {
+              dblclick: function() {
+                  $(this).data('angle', $(this).data('angle')+90);
+                  var w = $(this).css('width');
+                  $(this).parent().rotate({ animateTo: $(this).data('angle')}).css({width: $(this).css('height'), height: w});
+  
+              }
+          }
+      });
+    });
+
   }
 
 

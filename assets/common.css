@@ -63,18 +63,35 @@
             height: 100%;
             width: 100%;
             padding: 1%;
-            border: solid 1px #000;
             background-color: #fff;
 
             transition: all .4s;
             overflow: hidden;
         }
 
+            .sticker_boarder_outer{
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border: solid 1px #000;
+                z-index: 1;
+            }
+            .sticker_boarder_inner{
+                position: absolute;
+                top: 8px;
+                left: 8px;
+                right: 8px;
+                bottom: 8px;
+                border: dashed 1px #444;
+                background-color: transparent;
+            }
+
         .sticker_inner{
             position: relative;
             height: 100%;
             width: 100%;
-            border: dashed 1px #444;
             transition: all .4s;
         }
             .sticker_image_dropzone{
@@ -131,10 +148,53 @@
                     }
                     .sbac_add_image i{
                         font-size: 4em;
+                        padding-bottom: 15px;
                     }
                     .sbac_add_image .add_img_txt,
                     .sbac_add_image .add_img_desc{
                         opacity: .6;
+                    }
+                    .add_img_desc{
+                        font-size: 13pt;
+                    }
+
+                    @media(max-width:740px){
+                        .sbac_add_image i{
+                            padding-bottom: 5px;
+                            font-size: 3em;
+                        }
+                        .add_img_desc{
+                            font-size: 12pt;
+                        }
+                    }
+
+                    @media(max-width:622px){
+                        .sbac_add_image i{
+                            padding-bottom: 2px;
+                            font-size: 3em;
+                        }
+                        .add_img_desc{
+                            font-size: 10pt;
+                        }
+                    }
+                    @media(max-width:545px){
+                        .sbac_add_image i{
+                            padding-bottom: 0px;
+                            font-size: 2em;
+                        }
+                        .add_img_desc{
+                            font-size: 10pt;
+                        }
+                    }
+                    @media(max-width:500px){
+                        .sbac_add_image i{
+                            padding-bottom: 0px;
+                            font-size: 3.4em;
+                        }
+                        .add_img_desc{
+                            font-size: 10pt;
+                            display: none;
+                        }
                     }
 
 
@@ -205,3 +265,92 @@
         color: #000;
         z-index: 1;
     }
+
+
+
+
+    .image_on_edit .sticker_outer.image_uploaded {
+        overflow: visible;
+    }
+
+    .image_on_edit .sn_image {
+        position: relative;
+        border: dashed 3px #f00;
+        padding: 4px;
+        border-radius: 4px;
+        height: auto;
+    }
+
+    .image_on_edit .sticker_image_holder{
+        border: solid 2px #000;
+        z-index: 9998;
+        
+    }
+
+    .image_on_edit .sticker_set_controls{
+        display: none !important;
+    }
+    .image_on_edit .ui-wrapper.ui-draggable.ui-draggable-handle {
+        overflow: visible !important;
+    }
+
+    .image_on_edit .sticker_boarder_outer,
+    .image_on_edit .sticker_boarder_inner
+    {
+        z-index: 9999;
+        border-color: tomato;
+        background-color: rgba(255,255,255,.4);
+        pointer-events: none;
+    }
+
+    .image_on_edit{
+        z-index: 9999;
+    }
+
+
+    .resize
+    {
+        position:absolute;
+        border-color:black;
+        border-style:solid;
+        border-width:1px;
+    }
+
+    .ui-resizable-se,
+    .ui-resizable-sw,
+    .ui-resizable-nw,
+    .ui-resizable-ne{
+        width: 15px;
+        height: 15px;
+        border-radius: 10px;
+        background-color: #ccc;
+        border: solid 2px #444;
+        cursor: pointer !important;
+        transition: all .4s;
+    }
+
+    .ui-resizable-se:hover,
+    .ui-resizable-sw:hover,
+    .ui-resizable-nw:hover,
+    .ui-resizable-ne:hover{
+        opacity: .4;
+    }
+
+
+.ui-resizable-se{
+ bottom:0px;
+ right:0px;
+}
+
+.ui-resizable-sw{
+ bottom:0px;
+ left:-15px;
+}
+.ui-resizable-nw{
+ top:-12px;
+ left:-14px;
+}
+.ui-resizable-ne{
+ top:-14px;
+ right:0px;
+}
