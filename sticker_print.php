@@ -248,9 +248,12 @@ class stickerprint
             wp_enqueue_script( 'bootstrap_bundle_scripts', plugins_url('/assets/bootstrap4/bootstrap.bundle.min.js',__FILE__), array('jquery'));
             wp_enqueue_script( 'bootstrap_input_spinner', plugins_url('/assets/bootstrap4/bootstrap-input-spinner.js',__FILE__), array('bootstrap_bundle_scripts'));
             
+            
             //jQuery UI
             wp_enqueue_style( 'jquery_ui_styles', plugins_url('/assets/jquery_ui/jquery-ui.min.css',__FILE__),82);
             wp_enqueue_script( 'jquery_ui_scripts', plugins_url('/assets/jquery_ui/jquery-ui.min.js',__FILE__), array('jquery'));
+            //Touch Punch
+            wp_enqueue_script( 'jquery_touch_punch', plugins_url('/assets/touch-punch/touch-punch.min.js',__FILE__), array('jquery_ui_scripts'));
 
             //Font-Awesome
             wp_enqueue_style( 'fontawesome_css', plugins_url('/assets/font_awesome/css/font-awesome.css',__FILE__),90);

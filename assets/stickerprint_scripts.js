@@ -36,16 +36,6 @@ $(document).ready(function() {
  */   
 function ui_settings(){
 
-  $('#open_sidebar').on('click', function(){
-    document.getElementById("mySidebar").style.width = "250px";
-    document.getElementById("main").style.marginLeft = "250px";
-  });
-
-  $('#close_sidebar').on('click', function(){
-    document.getElementById("mySidebar").style.width = "0";
-    document.getElementById("main").style.marginLeft = "0";
-  });
-
   //Adjust Canvas
   adjust_canvas();
   $(window).on('resize', function(){
@@ -119,6 +109,8 @@ function dropzone_settings(){
     if (e.status=="success"){
       $(e.previewElement).closest('.sticker_outer').removeClass('image_in_dropzone');
       $(e.previewElement).closest('.sticker_outer').addClass('image_uploaded');
+      $(e.previewElement).closest('.sticker_set').addClass('image_attached');
+
       
       let image_url = window.plugin_url+'assets/images/'+e.upload.filename;
       $(e.previewElement).closest('.sticker_outer').find('.sn_image').attr('src',image_url);
@@ -141,6 +133,7 @@ function dropzone_settings(){
     // If remove button clicked
     let sticker_set = $(e).closest('.sticker_set');
     sticker_set.find('.sticker_set_controls .sbcs_remove').off().on('click', function(){
+      sticker_set.removeClass('image_attached');
       sticker_set.find('.sticker_outer').removeClass('image_uploaded');
       sticker_set.find('.sticker_outer').removeClass('image_in_dropzone');
       sticker_set.find('.dz-preview').remove();
@@ -179,7 +172,7 @@ function dropzone_settings(){
 
 
         // done editing
-        resize.parent().find('.sn_edit_done').off().on('click',function(){
+        resize.parent().find('.sn_edit_done').off().on('click touchstart',function(){
           $(this).closest('.sticker_set').removeClass('image_on_edit');
           $(this).remove();
           resize.parent().css( 'pointer-events','none' );
@@ -221,6 +214,7 @@ function dropzone_settings(){
           // Draggable UI reset as if remove button clicked
           $(ui.draggable).closest('.sticker_set').find('.sticker_outer').removeClass('image_uploaded');
           $(ui.draggable).closest('.sticker_set').find('.sticker_outer').removeClass('image_in_dropzone');
+          $(ui.draggable).closest('.sticker_set').removeClass('image_attached');
 
 
           console.log('droppble src:'+$(this).find('.sn_image').attr( 'src') );
@@ -229,6 +223,7 @@ function dropzone_settings(){
             $(ui.draggable).closest('.sticker_set').find('.sn_image').attr('src',$(this).find('.sn_image').attr( 'src'));
             $(ui.draggable).closest('.sticker_set').find('.sn_image').attr('style','');
             $(ui.draggable).closest('.sticker_set').find('.sticker_outer').addClass('image_uploaded');
+            $(ui.draggable).closest('.sticker_set').addClass('image_attached');
           }else{
             $(ui.draggable).closest('.sticker_set').find('.sn_image').attr('src','');
           }
@@ -256,6 +251,7 @@ function dropzone_settings(){
             $(this).find('.sn_image').attr( 'src',image_src );
             $(this).find('.sn_image').attr( 'style','' );
             $(this).closest('.sticker_outer').removeClass('image_in_dropzone');
+            $(this).closest('.sticker_set').addClass('image_attached');
             $(this).closest('.sticker_outer').addClass('image_uploaded');
             $(this).closest('.sticker_image_dropzone').find('.progress_handle').hide();
             reset_image_set_ui_functions( $(this) );
@@ -278,15 +274,71 @@ function dropzone_settings(){
   function print_sticker(){
 
     $('.sbcs_print_sticker').on('click', function(){
+
+      $(this).html('Preparing to print...');
+
       $('body').append('<div id="hidden_canvas"><div id="print_canvas" style="width:2480px; height:3508px; position:absolute;"></div></div>');
       $('#print_canvas').html( $('#sb_sticker_area').html() );
+
+      //Size calculations
+      let original_width = $('#sb_sticker_area #sticker_canvas').width();
+      let width_ratio = 2480/original_width;
+
+      let original_height = original_width*1.41;
+      let height_ratio = 3508/original_height;
+
+      $('#print_canvas').find('.sticker_image_holder').each(function(){
+
+        if( $(this).children('.ui-wrapper').length>0 ){
+          let original_uiw_width = $(this).find('.ui-wrapper').width();
+          let original_uiw_height = $(this).find('.ui-wrapper').height();
+          let original_uiw_position = $(this).find('.ui-wrapper').position();
+          let new_uiw_width = original_uiw_width * width_ratio;
+          let new_uiw_height = original_uiw_height * height_ratio;
+
+          $(this).find('.ui-wrapper').css('width', new_uiw_width+"px");
+          $(this).find('.ui-wrapper').css('height', new_uiw_height+"px");
+
+          $(this).find('.ui-wrapper').css('top', original_uiw_position.top*height_ratio+"px");
+          $(this).find('.ui-wrapper').css('left', original_uiw_position.left*width_ratio+"px");
+          
+  
+          console.log('original uiw width & height:'+original_uiw_width+" &"+original_uiw_height);
+          console.log('New uiw width & height:'+new_uiw_width+" &"+new_uiw_height);
+          console.log('original uiw Position:'+original_uiw_position);
+          console.log('New uiw Position:' + $(this).find('.ui-wrapper').position() );
+  
+          let original_sni_width = $(this).find('.sn_image').width();
+          let original_sni_height = $(this).find('.sn_image').height();
+          let original_sni_position = $(this).find('.sn_image').position();
+          let new_sni_width = original_sni_width * width_ratio;
+          let new_sni_height = original_sni_height * height_ratio;
+  
+          $(this).find('.sn_image').css('width', new_sni_width+"px");
+          $(this).find('.sn_image').css('height', new_sni_height+"px");
+
+          $(this).find('.sn_image').css('top', original_sni_position.top*height_ratio+"px");
+          $(this).find('.sn_image').css('left', original_sni_position.left*width_ratio+"px");
+  
+          console.log('original sni width & height:'+original_sni_width+" &"+original_sni_height);
+          console.log('New sni width & height:'+new_sni_width+" &"+new_sni_height);
+          console.log('original sni Position:'+original_sni_position);
+          console.log('New sni Position:' + $(this).find('.sn_image').position() );
+
+
+
+        }else{
+          console.log('no ui wrapper');
+        }
+      });
+
       const container = document.getElementById('print_canvas');
       let canvas_dataurl = '';
       
       html2canvas(container, { allowTaint: true }).then(function (canvas) {
         let imgsrc = canvas.toDataURL();
         
-        printJS(imgsrc, 'image');
+        printJS({printable:imgsrc, type:'image', showModal:true});
       });
 
       
@@ -296,7 +348,15 @@ function dropzone_settings(){
     $('.sbcs_download_sticker').on('click', function(){
       
       $('body').append('<div id="hidden_canvas"><div id="print_canvas" style="width:2480px; height:3508px; position:absolute;"></div></div>');
-      $('#print_canvas').html( $('#sb_sticker_area').html() );
+      $('#print_canvas').append( $('#sb_sticker_area').html() );
+
+      
+      $('#print_canvas .sn_image').each(function(){
+        let this_src = $(this).attr('src');
+        $(this).closest('.sticker_image_holder').html('');
+        $(this).closest('.sticker_image_holder').html('<img class="sn_image" src="'+this_src+'">');
+      });
+
       const container = document.getElementById('print_canvas');
       let canvas_dataurl = '';
       

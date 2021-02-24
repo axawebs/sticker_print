@@ -51,7 +51,7 @@
             transition: all .4s;
             z-index: 9999 !important;
         }
-        .sticker_set:hover .sticker_set_controls{
+        .sticker_set.image_attached:hover .sticker_set_controls{
             top: -51px;
             opacity: 1;
             z-index: 9999 !important;
@@ -356,6 +356,14 @@
     .ui-resizable-nw:hover,
     .ui-resizable-ne:hover{
         opacity: .4;
+        display: none;
+    }
+
+    .image_on_edit .ui-resizable-se,
+    .image_on_edit .ui-resizable-sw,
+    .image_on_edit .ui-resizable-nw,
+    .image_on_edit .ui-resizable-ne{
+        display: block;
     }
 
 
@@ -382,16 +390,30 @@
     background-color: tomato;
 }
 
+.image_in_dropzone .sticker_image_dropzone,
+.image_uploaded .sticker_image_dropzone,
+.image_on_edit .sticker_image_dropzone{
+    pointer-events: none;
+}
+
+
+
 
 
 /*
     Printing purposes
 */
 #hidden_canvas{
-    position: absolute;
+    
+    position: relative;
+    margin: 0 0 0 0;
+    top: 0;
+    left: 0;
     height: 10px;
     width: 10px;
     overflow: scroll;
+    z-index: 999999;
+    
 }
 #print_canvas #sticker_canvas{
     width:90% !important;
@@ -400,11 +422,20 @@
     pointer-events: none;
     background-color: transparent;
 }
-#print_canvas #sticker_canvas .sticker_set_controls,
-#print_canvas #sticker_canvas .sticker_boarder_outer,
-#print_canvas #sticker_canvas .sticker_inner
+#print_canvas #sticker_canvas .sticker_set_controls
 {
     display: none !important;
+}
+#print_canvas #sticker_canvas .sticker_boarder_outer,
+#print_canvas #sticker_canvas .sticker_boarder_inner
+{
+    border: none;
+}
+
+#print_canvas #sticker_canvas .sticker_inner .sticker_image_dropzone,
+#print_canvas #sticker_canvas .sticker_inner .sticker_image_notice
+{
+    display: none;
 }
 
 #print_canvas #sticker_canvas .sticker_set{
@@ -413,6 +444,10 @@
 /* style sheet for "A4" printing */
 @media print and (width: 21cm) and (height: 29.7cm) {
     @page {
-       margin: 3cm;
+       margin: .5cm;
     }
 }
+
+
+
+

@@ -61,7 +61,9 @@ if (! defined( 'ABSPATH') ){
 <div class="container-fluid">
     <div class="row sb_sticker_area">
         <div id="sticker_area_controls" class="col-12">
+            <!--
             <button class="btn btn-secondary sbcs_download_sticker"><i class="fa fa-download"></i> Download</button>
+            -->
             <button class="btn btn-secondary sbcs_print_sticker"><i class="fa fa-print"></i> Print</button>
         </div>
 
