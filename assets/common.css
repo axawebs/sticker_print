@@ -281,8 +281,13 @@
         overflow: visible;
     }
 
-    .image_on_edit .sn_image {
+    .sn_image{
         position: relative;
+        max-width: none !important;
+        width:100%;
+    }
+
+    .image_on_edit .sn_image {
         border: dashed 3px #f00;
         padding: 4px;
         border-radius: 4px;
@@ -323,7 +328,8 @@
         text-transform: none;
         position: absolute;
         transition: all .4s;
-        opacity: .5;
+        opacity: .8;
+        z-index: 99999;
     }
         .sn_edit_done:hover{
             opacity: 1;
@@ -349,41 +355,52 @@
         border: solid 2px #444;
         cursor: pointer !important;
         transition: all .4s;
+        display: none;
+        opacity: .8;
     }
 
     .ui-resizable-se:hover,
     .ui-resizable-sw:hover,
     .ui-resizable-nw:hover,
     .ui-resizable-ne:hover{
-        opacity: .4;
-        display: none;
+        opacity: 1;
+        background-color: #c00;
     }
-
-    .image_on_edit .ui-resizable-se,
-    .image_on_edit .ui-resizable-sw,
-    .image_on_edit .ui-resizable-nw,
-    .image_on_edit .ui-resizable-ne{
+    .image_on_edit_resize{
+        z-index: 99998;
+    }
+    .image_on_edit_resize .sn_edit_done{
+        z-index: 99999;
+        pointer-events: auto;
+    }
+    .image_on_edit_resize .ui-wrapper{
+        overflow: visible !important;
+    }
+    .image_on_edit_resize .ui-resizable-se,
+    .image_on_edit_resize .ui-resizable-sw,
+    .image_on_edit_resize .ui-resizable-nw,
+    .image_on_edit_resize .ui-resizable-ne{
         display: block;
     }
 
 
-.ui-resizable-se{
- bottom:0px;
- right:0px;
-}
+    .ui-resizable-se{
+    bottom:0px;
+    right:0px;
+    }
 
-.ui-resizable-sw{
- bottom:0px;
- left:-15px;
-}
-.ui-resizable-nw{
- top:-12px;
- left:-14px;
-}
-.ui-resizable-ne{
- top:-14px;
- right:0px;
-}
+    .ui-resizable-sw{
+    bottom:0px;
+    left:-15px;
+    }
+    .ui-resizable-nw{
+    top:-12px;
+    left:-14px;
+    }
+    .ui-resizable-ne{
+    top:-14px;
+    right:0px;
+    }
 
 
 .drop_hover{
@@ -396,6 +413,11 @@
     pointer-events: none;
 }
 
+
+.image_on_edit_move .sn_image{
+    cursor: move;
+    z-index: 99999;
+}
 
 
 
@@ -448,6 +470,19 @@
     }
 }
 
-
-
-
+.image_on_edit_rotate{
+    z-index: 99999;
+}
+.ui-rotatable-handle {
+    background-color: #c99;
+    border: solid 2px #444;
+    padding: 7px;
+    border-radius: 10px;
+    width: 20px !important;
+    height: 20px !important;
+    right: -25px;
+    left: auto !important;
+    z-index: 99999;
+    top: -25px !important;
+    opacity: 1;
+}

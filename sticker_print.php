@@ -252,6 +252,7 @@ class stickerprint
             //jQuery UI
             wp_enqueue_style( 'jquery_ui_styles', plugins_url('/assets/jquery_ui/jquery-ui.min.css',__FILE__),82);
             wp_enqueue_script( 'jquery_ui_scripts', plugins_url('/assets/jquery_ui/jquery-ui.min.js',__FILE__), array('jquery'));
+            wp_enqueue_script( 'jquery_ui_rotatable_scripts', plugins_url('/assets/jquery_ui/jquery.ui.rotatable.js',__FILE__), array('jquery_touch_punch'));
             //Touch Punch
             wp_enqueue_script( 'jquery_touch_punch', plugins_url('/assets/touch-punch/touch-punch.min.js',__FILE__), array('jquery_ui_scripts'));
 

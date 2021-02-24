@@ -19,9 +19,10 @@ if (! defined( 'ABSPATH') ){
     $sticker_set = 
     '<div class="sticker_set">
         <div class="sticker_set_controls">
-            <button class="btn btn-secondary sbcs_remove"><i class="fa fa-minus"></i></button>
-            <button class="btn btn-secondary sbcs_rotate_resize"><i class="fa fa-arrows"></i></button>
-            <button class="btn btn-secondary sbcs_print_single"><i class="fa fa-print"></i></button>
+            <button class="btn btn-secondary sbcs_remove"><img src="'.$plugin_url.'/assets/bin_icon.png" style="height:20px" /></button>
+            <button class="btn btn-secondary sbcs_resize"><img src="'.$plugin_url.'/assets/expand_icon.png" style="height:20px" /></button>
+            <button class="btn btn-secondary sbcs_move"><img src="'.$plugin_url.'/assets/move_icon.png" style="height:20px" /></button>
+            <button class="btn btn-secondary sbcs_rotate"><img src="'.$plugin_url.'/assets/rotate_icon.png" style="height:20px" /></button>
         </div>
         <div class="sticker_outer">
             <div class="sticker_boarder_outer">
@@ -96,4 +97,24 @@ if (! defined( 'ABSPATH') ){
         </div>
     </div>
     -->
+</div>
+
+
+<div class="modal" tabindex="-1" role="dialog" id="error_message">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Modal body text goes here.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
 </div>

@@ -55,6 +55,13 @@ function ui_settings(){
 }
 
 
+function error_message(title,body){
+  $('#error_message .modal-title').html(title);
+  $('#error_message .modal-body').html('<p>'+body+'</p>');
+  $('#error_message').modal('show');
+
+}
+
 
 /**
  * 
@@ -77,6 +84,7 @@ function dropzone_settings(){
     },
     uploadprogress: log_progress,
     complete: upload_complete,
+    timeout: 240000
   });
 
   function drag_enter(){
@@ -116,6 +124,8 @@ function dropzone_settings(){
       $(e.previewElement).closest('.sticker_outer').find('.sn_image').attr('src',image_url);
       $(e.previewElement).closest('.sticker_outer').find('.sn_image').attr('style','');
 
+    }else if(e.status=="error"){
+      error_message('File upload error',"Server rejected file upload. :(")
     }
     $(e.previewElement).closest('.sticker_image_dropzone').find('.progress_handle').hide();
     reset_image_set_ui_functions(e.previewElement);
@@ -148,6 +158,7 @@ function dropzone_settings(){
       if ( sticker_set.find('.sticker_outer .sn_image').parent().hasClass('ui-draggable') ){
         sticker_set.find('.sticker_outer .sn_image').parent().draggable('destroy');
       }
+
     });
 
 
@@ -172,94 +183,229 @@ function dropzone_settings(){
 
 
         // done editing
-        resize.parent().find('.sn_edit_done').off().on('click touchstart',function(){
+        resize.parent().parent().find('.sn_edit_done').off().on('click touchstart',function(){
           $(this).closest('.sticker_set').removeClass('image_on_edit');
           $(this).remove();
           resize.parent().css( 'pointer-events','none' );
           resize.parent().draggable('destroy');
         });
 
-        /*
-        resize.rotate({
-            bind: {
-                dblclick: function() {
-                    $(this).data('angle', $(this).data('angle')+90);
-                    var w = $(this).css('width');
-                    $(this).parent().rotate({ animateTo: $(this).data('angle')}).css({width: $(this).css('height'), height: w});
-    
-                }
-            }
+        resize.parent().rotatable({
+          handle:'rotatehandle',    
+          handleOffset: {   
+                top: '50%',
+                right: '50%'
+              },
+            
         });
-        */
+      }
+
+    });
+
+
+
+
+    // If resize clicked
+    $(e).closest('.sticker_set').find('.sticker_set_controls .sbcs_resize').off().on('click', function(){
+      if ( $(this).closest('.sticker_set').find('.sticker_outer').hasClass('image_uploaded') ){
+        $(this).closest('.sticker_set').addClass('image_on_edit');
+        $(this).closest('.sticker_set').addClass('image_on_edit_resize');
+        let resize = $(this).closest('.sticker_set').find('.sn_image');
+        resize.resizable({
+          handles: 'ne, se, sw, nw',
+        });
+        resize.parent().parent().css( 'pointer-events','auto' );
+        resize.parent().css( 'pointer-events','auto' );
+        resize.closest('.sticker_image_holder').append('<button class="btn btn-success sn_edit_done"><i class="fa fa-check"></i> Done</button>');
+
+        // done editing
+        resize.closest('.sticker_image_holder').find('.sn_edit_done').off().on('click touchstart',function(){
+          console.log('resize done editing');
+          $(this).closest('.sticker_set').removeClass('image_on_edit');
+          $(this).closest('.sticker_set').removeClass('image_on_edit_resize');
+          $(this).remove();
+          resize.parent().css( 'pointer-events','none' );
+
+          //let parent_styles = resize.parent().attr('style');
+          //resize.attr('style', parent_styles);
+          resize.resizable('destroy');
+        });
       }
     });
+  // / Resize
 
 
 
 
+    // If move clicked
+    $(e).closest('.sticker_set').find('.sticker_set_controls .sbcs_move').off().on('click', function(){
+
+      if ( $(this).closest('.sticker_set').find('.sticker_outer').hasClass('image_uploaded') ){
+
+        $(this).closest('.sticker_set').addClass('image_on_edit');
+        $(this).closest('.sticker_set').addClass('image_on_edit_move');
+        let mover = $(this).closest('.sticker_set').find('.sn_image');
+
+        mover.draggable({
+            stack: "div",
+            disabled: false,
+
+            /*
+            cursorAt: {
+              left: 0,
+              top: 0
+            }
+            */
+        });
+        mover.parent().css( 'pointer-events','auto' );
+        mover.parent().append('<button class="btn btn-success sn_edit_done"><i class="fa fa-check"></i> Done</button>');
 
 
+        // done editing
+        mover.parent().parent().find('.sn_edit_done').off().on('click touchstart',function(){
+          $(this).closest('.sticker_set').removeClass('image_on_edit');
+          $(this).closest('.sticker_set').removeClass('image_on_edit_move');
+          $(this).remove();
+          mover.parent().css( 'pointer-events','none' );
+          mover.draggable('destroy');
+          $( ".sticker_outer" ).droppable('destroy');
+        });
 
-    //On draggable dropped to droppable
-    $( ".sticker_outer" ).droppable({
-      
-      hoverClass: "drop_hover",
-      tolerance: "pointer",
-      
-      drop: function( event, ui ) {
-        if ( !$(this).closest('.sticker_set').hasClass('image_on_edit') ){
+
+        //On draggable dropped to droppable
+        $( ".sticker_outer" ).droppable({
           
-          let image_src = $(ui.draggable).children('img').attr('src');
+          hoverClass: "drop_hover",
+          tolerance: "pointer",
+          
+          drop: function( event, ui ) {
+            if ( !$(this).closest('.sticker_set').hasClass('image_on_edit_move') ){
 
-          // Draggable UI reset as if remove button clicked
-          $(ui.draggable).closest('.sticker_set').find('.sticker_outer').removeClass('image_uploaded');
-          $(ui.draggable).closest('.sticker_set').find('.sticker_outer').removeClass('image_in_dropzone');
-          $(ui.draggable).closest('.sticker_set').removeClass('image_attached');
+              console.log(ui);
+              
+              let image_src = $(ui.draggable).attr('src');
+
+              // Draggable UI reset as if remove button clicked
+              $(ui.draggable).closest('.sticker_set').find('.sticker_outer').removeClass('image_uploaded');
+              $(ui.draggable).closest('.sticker_set').find('.sticker_outer').removeClass('image_in_dropzone');
+              $(ui.draggable).closest('.sticker_set').removeClass('image_attached');
 
 
-          console.log('droppble src:'+$(this).find('.sn_image').attr( 'src') );
+              console.log('droppble src:'+$(this).find('.sn_image').attr( 'src') );
 
-          if ( typeof ( $(this).find('.sn_image').attr( 'src') ) !== 'undefined' && $(this).find('.sn_image').attr( 'src') != ''){
-            $(ui.draggable).closest('.sticker_set').find('.sn_image').attr('src',$(this).find('.sn_image').attr( 'src'));
-            $(ui.draggable).closest('.sticker_set').find('.sn_image').attr('style','');
-            $(ui.draggable).closest('.sticker_set').find('.sticker_outer').addClass('image_uploaded');
-            $(ui.draggable).closest('.sticker_set').addClass('image_attached');
-          }else{
-            $(ui.draggable).closest('.sticker_set').find('.sn_image').attr('src','');
-          }
+              /*
+              if ( typeof ( $(this).find('.sn_image').attr( 'src') ) !== 'undefined' && $(this).find('.sn_image').attr( 'src') != ''){
+                $(ui.draggable).closest('.sticker_set').find('.sn_image').attr('src',$(this).find('.sn_image').attr( 'src'));
+                $(ui.draggable).closest('.sticker_set').find('.sn_image').attr('style','');
+                $(ui.draggable).closest('.sticker_set').find('.sticker_outer').addClass('image_uploaded');
+                $(ui.draggable).closest('.sticker_set').addClass('image_attached');
+              }else{
+                */
+                $(ui.draggable).closest('.sticker_set').find('.sn_image').attr('src','');
+                /*
+              }
+              */
+              $(ui.draggable).closest('.sticker_set').find('.dz-preview').remove();
 
-          $(ui.draggable).closest('.sticker_set').find('.dz-preview').remove();
+              // Draggable specific UI reset
+                $(ui.draggable).closest('.sticker_set').removeClass('image_on_edit');
+                $(ui.draggable).closest('.sticker_set').removeClass('image_on_edit_move');
+                $(ui.draggable).closest('.sticker_set').find('.sn_edit_done').remove();
+                $(ui.draggable).css( 'pointer-events','none' );
+                $(ui.draggable).attr( 'style','none' );
+                $(ui.draggable).parent().attr( 'style','none' );
 
-          // Draggable specific UI reset
-            $(ui.draggable).closest('.sticker_set').removeClass('image_on_edit');
-            $(ui.draggable).find('.sn_edit_done').remove();
-            $(ui.draggable).css( 'pointer-events','none' );
+                $(ui.draggable).css({
+                  /*
+                  'left': $(ui.draggable).closest('.sticker_set').find('.sticker_image_holder').css('left'),
+                  'top': $(ui.draggable).closest('.sticker_set').find('.sticker_image_holder').css('top'),
+                  'width':$(ui.draggable).closest('.sticker_set').find('.sticker_image_holder').css('width'),
+                  'height':$(ui.draggable).closest('.sticker_set').find('.sticker_image_holder').css('height'),
+                  */
+                });
+                $(ui.draggable).draggable( "destroy" );
+                
 
-            $(ui.draggable).css({
-              'left': $(ui.draggable).closest('.sticker_set').find('.sticker_image_holder').css('left'),
-              'top': $(ui.draggable).closest('.sticker_set').find('.sticker_image_holder').css('top'),
-              'width':$(ui.draggable).closest('.sticker_set').find('.sticker_image_holder').css('width'),
-              'height':$(ui.draggable).closest('.sticker_set').find('.sticker_image_holder').css('height'),
-            });
-            $(ui.draggable).draggable( "destroy" );
-            $(ui.draggable).children('img').resizable("destroy");
-            
+                // Droppable ui set
+                console.log ( image_src );
 
-            // Droppable ui set
-            console.log ( image_src );
+                $(this).find('.sn_image').attr( 'src',image_src );
+                $(this).find('.sn_image').attr( 'style','' );
+                $(this).closest('.sticker_outer').removeClass('image_in_dropzone');
+                $(this).closest('.sticker_set').addClass('image_attached');
+                $(this).closest('.sticker_set').removeClass('image_on_edit_move');
+                $(this).closest('.sticker_set').removeClass('image_on_edit_resize');
+                $(this).closest('.sticker_outer').addClass('image_uploaded');
+                $(this).closest('.sticker_image_dropzone').find('.progress_handle').hide();
+                reset_image_set_ui_functions( $(this) );
+            }
+          },
+          
+        });
 
-            $(this).find('.sn_image').attr( 'src',image_src );
-            $(this).find('.sn_image').attr( 'style','' );
-            $(this).closest('.sticker_outer').removeClass('image_in_dropzone');
-            $(this).closest('.sticker_set').addClass('image_attached');
-            $(this).closest('.sticker_outer').addClass('image_uploaded');
-            $(this).closest('.sticker_image_dropzone').find('.progress_handle').hide();
-            reset_image_set_ui_functions( $(this) );
-            
-        }
-      },
-      
+      }
+
     });
+    // / Move
+    
+
+
+
+    // If rotate  clicked
+    $(e).closest('.sticker_set').find('.sticker_set_controls .sbcs_rotate').off().on('click', function(){
+
+      if ( $(this).closest('.sticker_set').find('.sticker_outer').hasClass('image_uploaded') ){
+
+        $(this).closest('.sticker_set').addClass('image_on_edit');
+        $(this).closest('.sticker_set').addClass('image_on_edit_rotate');
+
+        //Clear rotation
+        let current_rotation = $(this).closest('.sticker_set').find('.sn_image').css("transform");
+        $(this).closest('.sticker_set').find('.sn_image').css("transform",'');
+
+        let rotator_html = $(this).closest('.sticker_set').find('.sticker_image_holder').html();
+        $(this).closest('.sticker_set').find('.sticker_image_holder').html('<div class="rotate_wrapper" style="transform:'+current_rotation+'">'+rotator_html+'</div>');
+        let rotator = $(this).closest('.sticker_set').find('.rotate_wrapper');
+
+        rotator.parent().css( 'pointer-events','auto' );
+        rotator.parent().append('<button class="btn btn-success sn_edit_done"><i class="fa fa-check"></i> Done</button>');
+
+
+        // done editing
+        rotator.parent().parent().find('.sn_edit_done').off().on('click touchstart',function(){
+          $(this).closest('.sticker_set').removeClass('image_on_edit');
+          $(this).closest('.sticker_set').removeClass('image_on_edit_rotate');
+          $(this).remove();
+          rotator.parent().css( 'pointer-events','none' );
+          rotator.rotatable('destroy');
+          let rotate_style = rotator.attr('style');
+          //---
+          rotator.find('.sn_image').css('transform','');
+          let image_style = rotator.find('.sn_image').attr('style');
+          console.log('rotate css'+rotate_style);
+          rotator.find('.sn_image').attr('style', image_style+rotate_style );
+          let image_clone = rotator.find('.sn_image').clone();
+
+          console.log(image_clone);
+
+          rotator.parent().append(image_clone);
+          rotator.remove();
+        });
+
+        rotator.rotatable({
+          handle:'rotatehandle',    
+          handleOffset: {   
+                top: 0,
+                right: 0
+              },
+            
+        });
+      }
+
+    });
+
+
+    
 
   }
 }
@@ -275,7 +421,6 @@ function dropzone_settings(){
 
     $('.sbcs_print_sticker').on('click', function(){
 
-      $(this).html('Preparing to print...');
 
       $('body').append('<div id="hidden_canvas"><div id="print_canvas" style="width:2480px; height:3508px; position:absolute;"></div></div>');
       $('#print_canvas').html( $('#sb_sticker_area').html() );
@@ -346,28 +491,6 @@ function dropzone_settings(){
 
 
     $('.sbcs_download_sticker').on('click', function(){
-      
-      $('body').append('<div id="hidden_canvas"><div id="print_canvas" style="width:2480px; height:3508px; position:absolute;"></div></div>');
-      $('#print_canvas').append( $('#sb_sticker_area').html() );
-
-      
-      $('#print_canvas .sn_image').each(function(){
-        let this_src = $(this).attr('src');
-        $(this).closest('.sticker_image_holder').html('');
-        $(this).closest('.sticker_image_holder').html('<img class="sn_image" src="'+this_src+'">');
-      });
-
-      const container = document.getElementById('print_canvas');
-      let canvas_dataurl = '';
-      
-      html2canvas(container, { allowTaint: true }).then(function (canvas) {
-        let link = document.createElement("a");
-        document.body.appendChild(link);
-        link.download = "sticker_highres_300dpi.jpg";
-        link.href = canvas.toDataURL();
-        link.target = '_blank';
-        link.click();
-      });
     });
   }
 
