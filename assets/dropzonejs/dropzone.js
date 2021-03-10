@@ -763,6 +763,7 @@ function (_Emitter) {
           }
 
           if (this.previewsContainer) {
+            file.previewCox = this.previewsContainer; // Chandimaj
             file.previewElement = Dropzone.createElement(this.options.previewTemplate.trim());
             file.previewTemplate = file.previewElement; // Backwards compatibility
 

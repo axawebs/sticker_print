@@ -1,16 +1,29 @@
 <?php
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: POST, GET, DELETE, PUT, PATCH, OPTIONS');
+        header('Access-Control-Allow-Headers: token, Content-Type');
+        header('Access-Control-Max-Age: 1728000');
+        header('Content-Length: 0');
+        header('Content-Type: text/plain');
+        die();
+    }
+
+    header('Access-Control-Allow-Origin: *');
+    header('Content-Type: application/json');
+
+//require_once('../../../../wp-load.php');
  
 if (!empty($_FILES)) {
      
-    $tempFile = $_FILES['file']['tmp_name'];          //3             
-      
-    $targetPath = '../assets/images/';  //4
+    $tempFile = $_FILES['file']['tmp_name'];
      
-    $targetFile =  $targetPath.$_FILES['file']['name'];  //5
- 
-    move_uploaded_file($tempFile,$targetFile); //6
+    $targetFile =  '../assets/images/'.$_FILES['file']['name'];
+    
+    move_uploaded_file($tempFile,$targetFile);
      
 }
+
 
 /*
 $row_id = (int)$_POST["ac_row"];

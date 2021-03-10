@@ -4,10 +4,15 @@ if (! defined( 'ABSPATH') ){
 }
 
     //setting script variables
-    if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')   
-    $site_host = "https://";   
-    else  
-    $site_host = "http://";   
+    if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on'){
+        $site_host = "https://";   
+    }else{
+        $site_host = "http://";   
+    }
+
+    //$site_host = "http://"; 
+
+
     // Append the host(domain name, ip) to the URL.   
     $site_host.= $_SERVER['HTTP_HOST'];
 
@@ -28,8 +33,8 @@ if (! defined( 'ABSPATH') ){
             <div class="sticker_boarder_outer">
                 <div class="sticker_boarder_inner"></div>
             </div>
-            <div class="sticker_image_holder">
-                <img class="sn_image"/>
+            <div class="sticker_image_holder" id="{{image_id}}">
+                <img class="sn_image" />
             </div>
             <div class="sticker_inner">
                 <div class="sticker_image_dropzone">
@@ -42,7 +47,7 @@ if (! defined( 'ABSPATH') ){
                 </div>
                 <div class="sticker_image_notice">
                     <div class="sticker_image_addcontrols">
-                        <div class="sbac_add_image"><i class="fa fa-plus-circle"></i> <br> <span class="add_img_desc">Click or drag your image here to upload.</span></div>
+                        <div class="sbac_add_image"><i class="fa fa-plus-circle"></i> <br> <span class="add_img_desc">add or drop photo</span></div>
                     </div>
                 </div>
             </div>
@@ -55,31 +60,28 @@ if (! defined( 'ABSPATH') ){
 
     <script type="text/javascript">
         var plugin_url = "<?= $plugin_url ?>";
+        console.log('plugin_url:'+plugin_url);
     </script>
 </div>
 
 <!-- Frontend HTML -->
-<div class="container-fluid">
+<div class="container">
     <div class="row sb_sticker_area">
-        <div id="sticker_area_controls" class="col-12">
+        <div id="sticker_area_controls">
             <!--
             <button class="btn btn-secondary sbcs_download_sticker"><i class="fa fa-download"></i> Download</button>
             -->
-            <button class="btn btn-secondary sbcs_print_sticker"><i class="fa fa-print"></i> Print</button>
+            <button class="btn btn-secondary sbcs_print_sticker"><i class="fa fa-download"></i> Download PDF</button>
         </div>
 
         <div id="sb_sticker_area" class="col-12 sb_sticker_area">
             <div id="sticker_canvas">
-                <?= $sticker_set ?>
-                <?= $sticker_set ?>
-                <?= $sticker_set ?>
-                <?= $sticker_set ?>
-                <?= $sticker_set ?>
-                <?= $sticker_set ?>
-                <?= $sticker_set ?>
-                <?= $sticker_set ?>
-                <?= $sticker_set ?>
-                <?= $sticker_set ?>
+        <?php
+            for ($i=0; $i<10; $i++){
+              $stickerset_html = str_replace("{{image_id}}","sticker_img$i",$sticker_set);
+              echo ( $stickerset_html );
+            }
+        ?>
             </div>
         </div>
     </div>
@@ -116,5 +118,54 @@ if (! defined( 'ABSPATH') ){
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
+  </div>
+</div>
+
+
+
+<div class="modal" tabindex="4" role="dialog" id="printing_message">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title ">Preparing Print</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Please wait while print ready PDF file is prepared. It might take upto a few minutes depending on the size and resolution of the  images uploaded. <br>
+      </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<?php
+  $canvas_width = 2480;
+  $canvas_height = $canvas_width * 1.41;
+
+  $print_section_html = 
+  '<div class="print_section">
+    <div class="print_image_holder">
+      <img class="print_sn_image" style="width:100%; height:100%;">
+    </div>
+  </div>';
+?>
+
+<div id="hidden_canvas">
+  <div id="print_canvas">
+      <?= $print_section_html ?>
+      <?= $print_section_html ?>
+      <?= $print_section_html ?>
+      <?= $print_section_html ?>
+      <?= $print_section_html ?>
+      <?= $print_section_html ?>
+      <?= $print_section_html ?>
+      <?= $print_section_html ?>
+      <?= $print_section_html ?>
+      <?= $print_section_html ?>
   </div>
 </div>

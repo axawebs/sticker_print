@@ -19,7 +19,7 @@
 
     #sticker_area_controls{
         text-align: right;
-        margin: 5px;
+        margin: 5px auto;
     }
 
     /*
@@ -49,7 +49,7 @@
             border: solid 1px #444;
             border-bottom: none;
             transition: all .4s;
-            z-index: 9999 !important;
+            z-index: -1 !important;
         }
         .sticker_set.image_attached:hover .sticker_set_controls{
             top: -51px;
@@ -148,6 +148,7 @@
                         cursor: pointer;
                         transition: all .4s;
                         border-radius: 5px;
+                        margin-top: 5px;
                     }
                     .sbac_add_image:hover{
                         box-shadow: 0 0 8px 3px #ddd;
@@ -285,6 +286,7 @@
         position: relative;
         max-width: none !important;
         width:100%;
+        height: auto;
     }
 
     .image_on_edit .sn_image {
@@ -407,7 +409,7 @@
     background-color: tomato;
 }
 
-.image_in_dropzone .sticker_image_dropzone,
+/*.image_in_dropzone .sticker_image_dropzone,*/
 .image_uploaded .sticker_image_dropzone,
 .image_on_edit .sticker_image_dropzone{
     pointer-events: none;
@@ -417,57 +419,6 @@
 .image_on_edit_move .sn_image{
     cursor: move;
     z-index: 99999;
-}
-
-
-
-
-/*
-    Printing purposes
-*/
-#hidden_canvas{
-    
-    position: relative;
-    margin: 0 0 0 0;
-    top: 0;
-    left: 0;
-    height: 10px;
-    width: 10px;
-    overflow: scroll;
-    z-index: 999999;
-    
-}
-#print_canvas #sticker_canvas{
-    width:90% !important;
-    height:90% !important;
-    margin: 0 0 0 0 !important;
-    pointer-events: none;
-    background-color: transparent;
-}
-#print_canvas #sticker_canvas .sticker_set_controls
-{
-    display: none !important;
-}
-#print_canvas #sticker_canvas .sticker_boarder_outer,
-#print_canvas #sticker_canvas .sticker_boarder_inner
-{
-    border: none;
-}
-
-#print_canvas #sticker_canvas .sticker_inner .sticker_image_dropzone,
-#print_canvas #sticker_canvas .sticker_inner .sticker_image_notice
-{
-    display: none;
-}
-
-#print_canvas #sticker_canvas .sticker_set{
-    overflow: hidden;
-}
-/* style sheet for "A4" printing */
-@media print and (width: 21cm) and (height: 29.7cm) {
-    @page {
-       margin: .5cm;
-    }
 }
 
 .image_on_edit_rotate{
@@ -486,3 +437,103 @@
     top: -25px !important;
     opacity: 1;
 }
+
+@media (max-width:600px){
+    .sticker_set_controls{
+        height:90px;
+    }
+    .sticker_set.image_attached:hover .sticker_set_controls{
+        top: -90px;
+    }
+    .sticker_set_controls .btn {
+        width: 47%;
+        margin-bottom: 1%;
+    }
+}
+
+.sb_sticker_area .btn{
+    background-color: #666 !important;
+}
+
+.sbcs_print_sticker{
+    font-size: 14pt;
+}
+
+
+.modal-backdrop{
+    z-index: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+    Printing purposes
+*/
+#hidden_canvas{
+    
+    position: absolute;
+    margin: 0 0 0 0 !important;
+    padding: 0 0 0 0 !important;
+    top: 100vw;
+    left: 0;
+    
+    height: 100%;
+    width: 100%;
+    /**/
+    overflow: scroll;
+    z-index: 999999;
+    
+}
+
+
+
+#print_canvas{
+    position: absolute;
+    height: 3496.8px !important;
+    width: 2480px !important;
+    margin: 0 auto;
+    padding:5% !important;
+}
+
+.print_section {
+    position: relative;
+    float: left;
+    width: 48.8%;
+    height: 19.4%;
+    overflow: hidden;
+    margin: .3%;
+    background-color: #ccc;
+}
+
+.print_image_holder{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.print_sn_image{
+    position: absolute !important;
+    width:100% !important;
+}
+
+
+
+
+
+
+
+
+

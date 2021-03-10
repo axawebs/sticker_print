@@ -15,7 +15,10 @@ var ajax_url = '/wp-content/plugins/sticker_print/ajax_php/';
  */
 
 $(document).ready(function() {
-  console.log('StickerPrint Shortcode JavaScripts Loaded');
+  console.log('StickerPrint Shortcode JavaScripts Loaded V1.23');
+
+  ajax_url = window.plugin_url + 'ajax_php';
+  console.log('ajax_url:'+ajax_url);
 
   //UI Settings
   ui_settings();
@@ -49,7 +52,7 @@ function ui_settings(){
       if (width >= 800) { width=800 }
       let height = width*1.41;
 
-      $('#sticker_canvas').css('width',width+'px');
+      $('#sticker_canvas, #sticker_area_controls').css('width',width+'px');
       $('#sticker_canvas').css('height',height+'px');
   }
 }
@@ -70,23 +73,28 @@ function error_message(title,body){
 function dropzone_settings(){
   
   $(".sticker_image_dropzone").dropzone({ 
-    url: ajax_url+"file_upload.php",
+    url: ajax_url+"/file_upload.php",
     createImageThumbnails: false,
     resizeQuality: 1,
     maxFiles: 1,
-    acceptedFiles: 'image/*',
+    acceptedFiles: '.heic, image/*',
     //capture: 'image/*',
     dragenter: drag_enter,
     dragleave: drag_left,
     dragend: drag_ended,
     renameFile: function(e){
-      return e.name = Date.now()+'_'+e.name;
+      let extension = e.name.substr( (e.name.lastIndexOf('.') +1) );
+      return e.name = 'sp'+Date.now()+'.'+extension;
     },
     uploadprogress: log_progress,
     complete: upload_complete,
-    timeout: 240000
+    timeout: 240000,
+    clickable: true,
   });
 
+  $('.sticker_image_dropzone').on('touchstart', function(){
+    $(this).trigger('click');
+  });
   function drag_enter(){
     let element = $(this)[0].element;
     $(element).closest('.sticker_outer').addClass('image_in_dropzone');
@@ -120,21 +128,55 @@ function dropzone_settings(){
       $(e.previewElement).closest('.sticker_set').addClass('image_attached');
 
       
-      let image_url = window.plugin_url+'assets/images/'+e.upload.filename;
-      $(e.previewElement).closest('.sticker_outer').find('.sn_image').attr('src',image_url);
-      $(e.previewElement).closest('.sticker_outer').find('.sn_image').attr('style','');
-
+      let image_url = window.plugin_url+'/assets/images/'+e.upload.filename;
+      
+      set_image(e, image_url);
+      
     }else if(e.status=="error"){
       error_message('File upload error',"Server rejected file upload. :(")
     }
-    $(e.previewElement).closest('.sticker_image_dropzone').find('.progress_handle').hide();
+
+
+    $(e.previewElement).parent().closest('.sticker_image_dropzone').find('.progress_handle').hide();
     reset_image_set_ui_functions(e.previewElement);
     this.removeAllFiles(true); 
   }
 
+  
+  function set_image(e, image_url){
+    console.log('setting image:');
+    console.log("url:" + image_url);
+    console.log(e);
 
+    //Formatting heics
+    let image_extension = e.upload.filename.substr( (e.upload.filename.lastIndexOf('.') +1) );
+    image_extension = image_extension.toLowerCase();
 
+    if (image_extension=='heic'){
+      console.log('Converting .heic to .jpg');
 
+      fetch(image_url)
+      .then((res) => res.blob())
+      .then((blob) => heic2any({
+        blob,
+        toType: "image/jpeg",
+        quality: 1,
+      }))
+      .then((conversionResult) => {
+        let blob_url = URL.createObjectURL(conversionResult);
+        $(e.previewCox).closest('.sticker_outer').find('.sn_image').remove();
+        $(e.previewCox).closest('.sticker_outer').find('.sticker_image_holder').append(`<img class="sn_image xxx" src="${blob_url}" />`)
+      })
+      .catch((e) => {
+        console.log(e);
+        error_message('Image conversion error!',"Couldn't convert .heic file to .jpg . :(");
+      });
+
+    }else{
+      $(e.previewElement).closest('.sticker_outer').find('.sn_image').remove();
+      $(e.previewElement).closest('.sticker_outer').find('.sticker_image_holder').append(`<img class="sn_image xxx" src="${image_url}" />`)
+    }
+  }
 
 
 
@@ -142,14 +184,23 @@ function dropzone_settings(){
 
     // If remove button clicked
     let sticker_set = $(e).closest('.sticker_set');
+
+
+    //If remove Clicked
     sticker_set.find('.sticker_set_controls .sbcs_remove').off().on('click', function(){
       sticker_set.removeClass('image_attached');
+
       sticker_set.find('.sticker_outer').removeClass('image_uploaded');
       sticker_set.find('.sticker_outer').removeClass('image_in_dropzone');
+      sticker_set.find('.sticker_set').removeClass('image_on_edit');
+      sticker_set.find('.sticker_set').removeClass('image_on_edit_resize');
+      sticker_set.find('.sticker_set').removeClass('image_on_edit_move');
+      sticker_set.find('.sticker_set').removeClass('image_on_edit_rotate');
+      
       sticker_set.find('.dz-preview').remove();
       sticker_set.children('.ui-wrapper').remove();
-      sticker_set.children('.sn_image').remove();
-      sticker_set.find('.sticker_image_holder').append('<img class="sn_image"/>');
+      sticker_set.find('.sn_image').remove();
+      sticker_set.find('.sticker_image_holder').html('<img class="sn_image"/>');
 
       if ( sticker_set.find('.sticker_outer .sn_image').hasClass('ui-resizable') ){
         sticker_set.find('.sticker_outer .sn_image').resizable('destroy');
@@ -161,46 +212,6 @@ function dropzone_settings(){
 
     });
 
-
-    // If rotate resize clicked
-    $(e).closest('.sticker_set').find('.sticker_set_controls .sbcs_rotate_resize').off().on('click', function(){
-
-      if ( $(this).closest('.sticker_set').find('.sticker_outer').hasClass('image_uploaded') ){
-
-        $(this).closest('.sticker_set').addClass('image_on_edit');
-        let resize = $(this).closest('.sticker_set').find('.sn_image');
-
-        resize.resizable({
-          handles: 'ne, se, sw, nw',
-          //aspectRatio: resize.width()/resize.height(),
-        });
-        resize.parent().draggable({
-            stack: "div",
-            disabled: false
-        });
-        resize.parent().css( 'pointer-events','auto' );
-        resize.parent().append('<button class="btn btn-success sn_edit_done"><i class="fa fa-check"></i> Done</button>');
-
-
-        // done editing
-        resize.parent().parent().find('.sn_edit_done').off().on('click touchstart',function(){
-          $(this).closest('.sticker_set').removeClass('image_on_edit');
-          $(this).remove();
-          resize.parent().css( 'pointer-events','none' );
-          resize.parent().draggable('destroy');
-        });
-
-        resize.parent().rotatable({
-          handle:'rotatehandle',    
-          handleOffset: {   
-                top: '50%',
-                right: '50%'
-              },
-            
-        });
-      }
-
-    });
 
 
 
@@ -421,71 +432,132 @@ function dropzone_settings(){
 
     $('.sbcs_print_sticker').on('click', function(){
 
+      $('#printing_message').modal('show');
 
-      $('body').append('<div id="hidden_canvas"><div id="print_canvas" style="width:2480px; height:3508px; position:absolute;"></div></div>');
-      $('#print_canvas').html( $('#sb_sticker_area').html() );
+      var iter = 0;
+      function repeat_generate_canvas(){
+        if(iter>=10){
+          return;
+        }
+        console.log("iter:"+iter);
+        let source_image = document.getElementById('sticker_img'+iter);
 
-      //Size calculations
-      let original_width = $('#sb_sticker_area #sticker_canvas').width();
-      let width_ratio = 2480/original_width;
+        html2canvas(source_image, {
+          dpi: 300, // Set to 300 DPI
+          //scale: 1, // Adjusts your resolution
+          allowTaint: true,
+          logging: true,
+          //width:2480,
+          //height:3497,
+          useCORS:true,
+          //windowWidth:2480,
+          //windowHeight:3497,
+          //letterRendering: 1,
+          //scrollX:0,
+          //scrollY:0,
+          imageTimeout:0
+        }).then(function(canvas){
+          console.log('canvas image rendered for'+source_image+" at image location"+iter);
+          var img = canvas.toDataURL("image/jpeg", 1);
+          //$('body').append('<img src="'+img+'" />');
+          $('#print_canvas .print_section').eq(iter).find('.prinr_sn_image').remove();
+          $('#print_canvas .print_section').eq(iter).append('<img src="'+img+'" class="print_sn_image" style="width:100%" />');
 
-      let original_height = original_width*1.41;
-      let height_ratio = 3508/original_height;
+          if (iter<10){
+            iter++;
+            repeat_generate_canvas();
+          }else{
+            generate_output_pdf();
+          }
+        });
+      }
+      repeat_generate_canvas();
 
-      $('#print_canvas').find('.sticker_image_holder').each(function(){
+        /*
+        let source_image = $('#sb_sticker_area .sticker_image_holder').eq(i).find('.sn_image');
+        $('#print_canvas .print_section').eq(i).find('.prinr_sn_image').remove();
+        $('#print_canvas .print_section').eq(i).append('<img src="'+source_image.attr('src')+'" style="'+source_image.attr('style')+'" class="print_sn_image" />');
+        $('#print_canvas .print_section').eq(i).find('.print_sn_image').load(function(){
+          modify_print_iamge_styles(source_image, $(this) );
+        });
+        */
+    
 
-        if( $(this).children('.ui-wrapper').length>0 ){
-          let original_uiw_width = $(this).find('.ui-wrapper').width();
-          let original_uiw_height = $(this).find('.ui-wrapper').height();
-          let original_uiw_position = $(this).find('.ui-wrapper').position();
-          let new_uiw_width = original_uiw_width * width_ratio;
-          let new_uiw_height = original_uiw_height * height_ratio;
+      
+      //generate_output_pdf();
+      
 
-          $(this).find('.ui-wrapper').css('width', new_uiw_width+"px");
-          $(this).find('.ui-wrapper').css('height', new_uiw_height+"px");
 
-          $(this).find('.ui-wrapper').css('top', original_uiw_position.top*height_ratio+"px");
-          $(this).find('.ui-wrapper').css('left', original_uiw_position.left*width_ratio+"px");
+      function modify_print_iamge_styles(source_image, on_image){
+        
+        if ( typeof source_image.attr('src') !== 'undefined' && source_image.attr('src') != ''  ){
+          //Size calculations
+          let ratio = on_image.parent().width()/source_image.parent().width();
+
           
-  
-          console.log('original uiw width & height:'+original_uiw_width+" &"+original_uiw_height);
-          console.log('New uiw width & height:'+new_uiw_width+" &"+new_uiw_height);
-          console.log('original uiw Position:'+original_uiw_position);
-          console.log('New uiw Position:' + $(this).find('.ui-wrapper').position() );
-  
-          let original_sni_width = $(this).find('.sn_image').width();
-          let original_sni_height = $(this).find('.sn_image').height();
-          let original_sni_position = $(this).find('.sn_image').position();
-          let new_sni_width = original_sni_width * width_ratio;
-          let new_sni_height = original_sni_height * height_ratio;
-  
-          $(this).find('.sn_image').css('width', new_sni_width+"px");
-          $(this).find('.sn_image').css('height', new_sni_height+"px");
+          let original_sni_width = source_image.width();
+          let original_sni_height = source_image.height();
+          let original_sni_position = source_image.position();
+          let sni_aspectRatio = source_image.width() / source_image.height();
 
-          $(this).find('.sn_image').css('top', original_sni_position.top*height_ratio+"px");
-          $(this).find('.sn_image').css('left', original_sni_position.left*width_ratio+"px");
-  
+          let new_sni_width = source_image.width() * ratio;
+          let new_sni_height = new_sni_width / sni_aspectRatio;
+
+          on_image.css('width', new_sni_width+"px");
+          on_image.css('height', new_sni_height+"px");
+
+          let new_top = original_sni_position.top * ratio;
+          let new_left = original_sni_position.left * ratio;
+
+          on_image.css('top', new_top+"px");
+          on_image.css('left', new_left+"px");
+
+          console.log('--------------------- Image Scaling Started ------------------');
+          console.log('width & height ratio:'+ratio);
           console.log('original sni width & height:'+original_sni_width+" &"+original_sni_height);
           console.log('New sni width & height:'+new_sni_width+" &"+new_sni_height);
-          console.log('original sni Position:'+original_sni_position);
-          console.log('New sni Position:' + $(this).find('.sn_image').position() );
-
-
-
-        }else{
-          console.log('no ui wrapper');
+          console.log('original sni Position:');
+          console.log(original_sni_position);
+          console.log('New sni Position:');
+          console.log( on_image.position() );
+          console.log('--------------------- Image Scaling Finished for image ------------------');
         }
-      });
-
-      const container = document.getElementById('print_canvas');
-      let canvas_dataurl = '';
+      }
       
-      html2canvas(container, { allowTaint: true }).then(function (canvas) {
-        let imgsrc = canvas.toDataURL();
-        
-        printJS({printable:imgsrc, type:'image', showModal:true});
-      });
 
+      function generate_output_pdf(){
+        var w = 2480;
+        var h = 2480*1.41;
+
+        //$('#sticker_canvas').css('width', w+"px");
+        //$('#sticker_canvas').css('height', h+"px");
+        
+        html2canvas(document.getElementById('print_canvas'), {
+          dpi: 300, // Set to 300 DPI
+          scale: 3, // Adjusts your resolution
+          allowTaint: true,
+          logging: true,
+          width:2480,
+          height:3497,
+          useCORS:true,
+          windowWidth:2480,
+          windowHeight:3497,
+          letterRendering: 1,
+          //scrollX:0,
+          //scrollY:0,
+          imageTimeout:0
+        }).then(function(canvas){
+          console.log('canvas image rendered');
+          var img = canvas.toDataURL("image/jpeg", 1);
+          //$('body').append('<img src="'+img+'" />');
+
+          var doc = new jsPDF('p', 'mm', [210, 297]);
+          doc.addImage(img, 'png', 10, 10, 190, 277);
+          doc.save('stricker_print.pdf'); 
+
+          $('#printing_message').modal('hide');
+        }); 
+      }
       
     });
 
@@ -496,3 +568,9 @@ function dropzone_settings(){
 
 //--- jQuery No Conflict
 })(jQuery);
+
+
+/**
+ * 
+ * margin: 0px; resize: none; position: relative; zoom: 1; display: block; height: 251.641px; width: 378.141px; top: -63px; left: -24px; z-index: 194;
+ */
