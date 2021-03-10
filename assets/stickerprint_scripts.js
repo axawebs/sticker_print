@@ -434,57 +434,17 @@ function dropzone_settings(){
 
       $('#printing_message').modal('show');
 
-      var iter = 0;
-      function repeat_generate_canvas(){
-        if(iter>=10){
-          return;
-        }
-        console.log("iter:"+iter);
-        let source_image = document.getElementById('sticker_img'+iter);
-
-        html2canvas(source_image, {
-          dpi: 300, // Set to 300 DPI
-          //scale: 1, // Adjusts your resolution
-          allowTaint: true,
-          logging: true,
-          //width:2480,
-          //height:3497,
-          useCORS:true,
-          //windowWidth:2480,
-          //windowHeight:3497,
-          //letterRendering: 1,
-          //scrollX:0,
-          //scrollY:0,
-          imageTimeout:0
-        }).then(function(canvas){
-          console.log('canvas image rendered for'+source_image+" at image location"+iter);
-          var img = canvas.toDataURL("image/jpeg", 1);
-          //$('body').append('<img src="'+img+'" />');
-          $('#print_canvas .print_section').eq(iter).find('.prinr_sn_image').remove();
-          $('#print_canvas .print_section').eq(iter).append('<img src="'+img+'" class="print_sn_image" style="width:100%" />');
-
-          if (iter<10){
-            iter++;
-            repeat_generate_canvas();
-          }else{
-            generate_output_pdf();
-          }
-        });
-      }
-      repeat_generate_canvas();
-
-        /*
+      for (i=0; i<10; i++){
         let source_image = $('#sb_sticker_area .sticker_image_holder').eq(i).find('.sn_image');
         $('#print_canvas .print_section').eq(i).find('.prinr_sn_image').remove();
         $('#print_canvas .print_section').eq(i).append('<img src="'+source_image.attr('src')+'" style="'+source_image.attr('style')+'" class="print_sn_image" />');
         $('#print_canvas .print_section').eq(i).find('.print_sn_image').load(function(){
           modify_print_iamge_styles(source_image, $(this) );
         });
-        */
-    
+      }
 
-      
-      //generate_output_pdf();
+      generate_output_pdf();
+
       
 
 
@@ -528,20 +488,17 @@ function dropzone_settings(){
       function generate_output_pdf(){
         var w = 2480;
         var h = 2480*1.41;
-
-        //$('#sticker_canvas').css('width', w+"px");
-        //$('#sticker_canvas').css('height', h+"px");
         
         html2canvas(document.getElementById('print_canvas'), {
-          dpi: 300, // Set to 300 DPI
-          scale: 3, // Adjusts your resolution
+          //dpi: 300, // Set to 300 DPI
+          scale: 1, // Adjusts your resolution
           allowTaint: true,
           logging: true,
           width:2480,
           height:3497,
           useCORS:true,
-          windowWidth:2480,
-          windowHeight:3497,
+          //windowWidth:2480,
+          //windowHeight:3497,
           letterRendering: 1,
           //scrollX:0,
           //scrollY:0,

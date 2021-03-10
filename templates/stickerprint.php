@@ -33,8 +33,8 @@ if (! defined( 'ABSPATH') ){
             <div class="sticker_boarder_outer">
                 <div class="sticker_boarder_inner"></div>
             </div>
-            <div class="sticker_image_holder" id="{{image_id}}">
-                <img class="sn_image" />
+            <div class="sticker_image_holder">
+                <img class="sn_image"/>
             </div>
             <div class="sticker_inner">
                 <div class="sticker_image_dropzone">
@@ -76,12 +76,16 @@ if (! defined( 'ABSPATH') ){
 
         <div id="sb_sticker_area" class="col-12 sb_sticker_area">
             <div id="sticker_canvas">
-        <?php
-            for ($i=0; $i<10; $i++){
-              $stickerset_html = str_replace("{{image_id}}","sticker_img$i",$sticker_set);
-              echo ( $stickerset_html );
-            }
-        ?>
+                <?= $sticker_set ?>
+                <?= $sticker_set ?>
+                <?= $sticker_set ?>
+                <?= $sticker_set ?>
+                <?= $sticker_set ?>
+                <?= $sticker_set ?>
+                <?= $sticker_set ?>
+                <?= $sticker_set ?>
+                <?= $sticker_set ?>
+                <?= $sticker_set ?>
             </div>
         </div>
     </div>
