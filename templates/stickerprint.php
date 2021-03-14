@@ -131,17 +131,23 @@ if (! defined( 'ABSPATH') ){
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title ">Preparing Print</h3>
+        <h3 class="modal-title ">Generating your print file...</h3>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <p>Please wait while print ready PDF file is prepared. It might take upto a few minutes depending on the size and resolution of the  images uploaded. <br>
-      </p>
+        <div>
+          <img id="loading_image" src="<?= $plugin_url?>/assets/loading.gif" />
+          Please wait while print ready PDF file is prepared.<br>
+          It might take upto a few minutes depending on the size and resolution of the  images uploaded. <br>
+          <div class="print_status">Status: <span>Initializing...</span></div>
+        </div>
       </div>
       <div class="modal-footer">
+        <!--
         <button type="button" class="btn btn-secondary" data-dismiss="modal">OK</button>
+        -->
       </div>
     </div>
   </div>

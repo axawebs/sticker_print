@@ -462,89 +462,68 @@ function modal_msg(title, mbody){
 
     $('.sbcs_print_sticker').on('click', function(){
 
-
+      $('.print_status span').html('Initializing...');
       modal_msg();
 
-      for (i=0; i<10; i++){
+      let images_processed = 0;
+
+      function process_images(){
+        let i = images_processed;
         let source_image = $('#sb_sticker_area .sticker_image_holder').eq(i).find('.sn_image');
 
-        if ( typeof source_image.attr('src') === 'undefined' || source_image.attr('src')=='' ){
-         // modal_msg('Please add stickers',);
-         console.log('skipping undefined image src for sn_image:'+i)
-          continue;
-        }
-      
-        $('#print_canvas .print_section').eq(i).find('.print_sn_image').remove();
-        $('#print_canvas .print_section').eq(i).find('.print_image_holder').append('<img src="'+source_image.attr('src')+'" style="'+source_image.attr('style')+ 'position:relative;" class="print_sn_image" id="sn_print_img'+i+'" />');
-        $('#print_canvas .print_section').eq(i).find('.print_image_holder .print_sn_image').css({
-          'zoom':'',
-          'resize':'',
-        });
-        $('#print_canvas .print_section').eq(i).find('.print_sn_image').load(function(){
-          modify_print_image_styles(source_image, $('#print_canvas .print_section').eq(i).find('.print_sn_image') );
-        });
-      }
-
-
-      /**
-       * 
-       * Convert individual image to mini canvasas ( Rasterizing each image )
-       */
-      let image_element = 0;
-      function convert_individual_pringimg_to_canvas(){
-        let current_image = document.getElementById('print_imgid_'+image_element);
-        let temp_element = $('<div style="top:100%; width:1230.08px; height:685.41px; position:absolute; overflow:scroll;" id="temp_div"></div>');
-        temp_element.append( $(current_image).parent().html() );
-        temp_element.find('.print_image_holder').css({
-          'width':'100% !important',
-          'height':'100% !important',
-          'position':'absolute'
-        });
-        $('#hidden_canvas').append(temp_element);
-
+        //No image on any source found to processed
+        if (i>=11){ 
+          $('.print_status span').html('[10/10] Stickers Processed. <br>No image found to generate sticker.');
+          return;
         
-        html2canvas( document.getElementById('temp_div').getElementsByClassName('print_image_holder')[0], {
-          //dpi: 300, // Set to 300 DPI
-          //scale: 1, // Adjusts your resolution
-          //allowTaint: true,
-          logging: true,
-          width:1230.08,
-          height:685.412,
-          //useCORS:true,
-          //windowWidth:1230.08,
-          //windowHeight:685.412,
-          //letterRendering: 1,
-          scrollX:0,
-          scrollY:0,
-          imageTimeout:0
-        }).then(function(canvas){
-          console.log('canvas image rendered for imageid: '+image_element);
-          let img = canvas.toDataURL("image/jpeg", 1);
-          $('#print_imgid_'+image_element).find('.print_sn_image').remove();
-          $('#print_imgid_'+image_element).css({
-              'background-image':'url('+img+')',
-              'background-size':'contain'
-          });
+        //All 10 images are processed
+        }else if(i==10){
+          $('.print_status span').html('[10/10] Stickers Processed. <br>Generating print ready PDF file...');
+          generate_output_pdf();
+          return;
+        
+        //No image is set for current souce image
+        }else if ( typeof source_image.attr('src') === 'undefined' || source_image.attr('src')=='' ){
+         // modal_msg('Please add stickers',);
+         console.log('skipping undefined image src for sn_image:'+i);
+         $('.print_status span').html('['+(i+1)+'/10] Stickers Processed. <br>No image found on current section.<br>Skipping...');
+         images_processed++;
+         process_images ();
+         return;
 
-          if(image_element>=9){
-            generate_output_pdf();
-          }else{
-            image_element++;
-           // convert_individual_pringimg_to_canvas();
-          }
-        }); 
+
+        }else{
+
+          //-- source Image found
+          $('#print_canvas .print_section').eq(i).find('.print_sn_image').remove();
+
+          //Check if source image has styles
+          let source_styles = source_image.attr('style');
+          if ( typeof source_styles === 'undefined' || source_styles == ''){ source_styles = '';}
+
+          modify_print_image_styles(i);
+        }
       }
-      convert_individual_pringimg_to_canvas();
-      //generate_output_pdf();
-      
+
+      process_images(); // Initiate Process Images
 
 
-      function modify_print_image_styles(source_image, on_image){
+
+      function modify_print_image_styles(i){
+
+        let source_image = $('#sb_sticker_area .sticker_image_holder').eq(i).find('.sn_image');
+        let source_image_src = source_image.attr('src');
+
+
+          let temp_element = $('<div id="temp_div" style="top:100%; width:1230.08px; height:685.41px; position:absolute; overflow:scroll;"></div>');
+          temp_element.append( '<div class="print_image_holder"><img class="print_sn_image" src="'+source_image_src+'" id="print_imgid'+i+'"/></div>' );
+          $('#hidden_canvas').append(temp_element);
+
         
         if ( typeof source_image.attr('src') !== 'undefined' && source_image.attr('src') != ''  ){
           //Size calculations
-          let ratio = on_image.parent().width()/source_image.parent().width();
-
+          let ratio = 1230.08/source_image.parent().width();
+          let on_image = $('#temp_div .print_sn_image');
           
           let original_sni_width = source_image.width();
           let original_sni_height = source_image.height();
@@ -575,9 +554,62 @@ function modal_msg(title, mbody){
           console.log('New sni Position:');
           console.log( on_image.position() );
           console.log('--------------------- Image Scaling Finished for image ------------------');
+
+          
+          convert_individual_pringimg_to_canvas(i);
+          
         }
       }
       
+
+
+       /**
+       * 
+       * Convert individual image to mini canvasas ( Rasterizing each image )
+       */
+        function convert_individual_pringimg_to_canvas(image_element){
+          console.log('--------------------- Image individual rendering Started ------------------');
+          $('.print_status span').html('['+(image_element+1)+'+/10] Processing... <br>Generating high resolution image for current image...');
+
+          html2canvas( document.getElementById('temp_div').getElementsByClassName('print_image_holder')[0], {
+            //dpi: 300, // Set to 300 DPI
+            //scale: 1, // Adjusts your resolution
+            //allowTaint: true,
+            logging: true,
+            width:1230.08,
+            height:685.412,
+            //useCORS:true,
+            //windowWidth:1230.08,
+            //windowHeight:685.412,
+            //letterRendering: 1,
+            scrollX:0,
+            scrollY:0,
+            imageTimeout:0
+          }).then(function(canvas){
+            console.log('canvas image rendered for imageid: '+image_element);
+            let img = canvas.toDataURL("image/jpeg", 1);
+            //$('#print_imgid_'+image_element).find('.print_sn_image').remove();
+            $('#print_imgid_'+image_element).css({
+                'background-image':'url('+img+')',
+                'background-size':'contain'
+            });
+
+            //Removing Temp Div
+            $('#temp_div').remove();
+            images_processed++;
+            process_images();
+            console.log('--------------------- Image individual rendering Finished ------------------');
+          }); 
+        }
+
+
+
+
+
+
+
+
+
 
       function generate_output_pdf(){
         var w = 2480;
