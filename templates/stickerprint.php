@@ -160,7 +160,9 @@ if (! defined( 'ABSPATH') ){
   $print_section_html = 
   '<div class="print_section">
     <div class="print_image_holder" id="{{print_img_id}}">
+    <!--
       <img class="print_sn_image" style="width:100%; height:100%;">
+      -->
     </div>
   </div>';
 ?>

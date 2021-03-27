@@ -15,7 +15,7 @@ var ajax_url = '/wp-content/plugins/sticker_print/ajax_php/';
  */
 
 $(document).ready(function() {
-  console.log('StickerPrint Shortcode JavaScripts Loaded V1.23');
+  console.log('StickerPrint Shortcode JavaScripts Loaded V2.20');
 
   ajax_url = window.plugin_url + 'ajax_php';
   console.log('ajax_url:'+ajax_url);
@@ -412,11 +412,17 @@ function dropzone_settings(){
         });
 
         rotator.rotatable({
-          handle:'rotatehandle',    
+          handle:'rotatehandle',
           handleOffset: {   
                 top: 0,
                 right: 0
               },
+          /*
+          rotationCenterOffset: {
+                top: 0,
+                left: 0
+                  },
+          */
             
         });
       }
@@ -462,13 +468,17 @@ function modal_msg(title, mbody){
 
     $('.sbcs_print_sticker').on('click', function(){
 
+
       $('.print_status span').html('Initializing...');
       modal_msg();
 
       let images_processed = 0;
 
-      function process_images(){
-        let i = images_processed;
+      function pseudo_function(i){
+        iterate_process_images(i);
+      }
+
+      function iterate_process_images(i){
         let source_image = $('#sb_sticker_area .sticker_image_holder').eq(i).find('.sn_image');
 
         //No image on any source found to processed
@@ -488,11 +498,15 @@ function modal_msg(title, mbody){
          console.log('skipping undefined image src for sn_image:'+i);
          $('.print_status span').html('['+(i+1)+'/10] Stickers Processed. <br>No image found on current section.<br>Skipping...');
          images_processed++;
-         process_images ();
+         pseudo_function (images_processed);
          return;
-
-
         }else{
+          process_images(i);
+        }
+      }
+
+      function process_images(i){
+        let source_image = $('#sb_sticker_area .sticker_image_holder').eq(i).find('.sn_image');
 
           //-- source Image found
           $('#print_canvas .print_section').eq(i).find('.print_sn_image').remove();
@@ -502,20 +516,22 @@ function modal_msg(title, mbody){
           if ( typeof source_styles === 'undefined' || source_styles == ''){ source_styles = '';}
 
           modify_print_image_styles(i);
-        }
       }
-
-      process_images(); // Initiate Process Images
-
 
 
       function modify_print_image_styles(i){
 
+        $('#hidden_canvas').css({
+          top:'0px',
+          width:'100%',
+          height:'100%',
+        });
+
         let source_image = $('#sb_sticker_area .sticker_image_holder').eq(i).find('.sn_image');
         let source_image_src = source_image.attr('src');
 
-
-          let temp_element = $('<div id="temp_div" style="top:100%; width:1230.08px; height:685.41px; position:absolute; overflow:scroll;"></div>');
+          $('#temp_div').remove();
+          let temp_element = $('<div id="temp_div" style="top:100%; width:100%; height:100%; position:absolute; overflow:scroll;"></div>');
           temp_element.append( '<div class="print_image_holder"><img class="print_sn_image" src="'+source_image_src+'" id="print_imgid'+i+'"/></div>' );
           $('#hidden_canvas').append(temp_element);
 
@@ -524,7 +540,7 @@ function modal_msg(title, mbody){
           //Size calculations
           let ratio = 1230.08/source_image.parent().width();
           let on_image = $('#temp_div .print_sn_image');
-          
+
           let original_sni_width = source_image.width();
           let original_sni_height = source_image.height();
           let original_sni_position = source_image.position();
@@ -533,17 +549,44 @@ function modal_msg(title, mbody){
           let new_sni_width = source_image.width() * ratio;
           let new_sni_height = new_sni_width / sni_aspectRatio;
 
-          on_image.css('width', new_sni_width+"px");
-          on_image.css('max-width', new_sni_width+"px");
-          on_image.css('height', new_sni_height+"px");
-          on_image.css('max-width', new_sni_width+"px");
+          let new_top = source_image.css('top').replace('px','') * ratio;
+          let new_left = source_image.css('left').replace('px','') * ratio;
 
+          let image_rotation = getRotationDegrees(source_image);
 
-          let new_top = original_sni_position.top * ratio;
-          let new_left = original_sni_position.left * ratio;
+          on_image.css({
+            'width':new_sni_width+"px",
+            'max-width': new_sni_width+"px",
+            'height': new_sni_height+"px",
+            'max-height': new_sni_height+"px",
+            'top': new_top+"px",
+            'left': new_left+"px",
+            
+          }); 
 
-          on_image.css('top', new_top+"px");
-          on_image.css('left', new_left+"px");
+          let top_offset = 0;
+          let left_offset = 0;
+          let new_top_withoffset = 0;
+          let new_left_withoffset = 0;
+
+          //If rotation applied 
+          if( image_rotation!=0 ){
+
+            on_image.css({
+              'position':'absolute',
+              //'transform-origin': (new_sni_height/2)+'px '+(new_sni_width/2)+'px',
+              'top':original_sni_position.top + 'px',
+              'left':original_sni_position.left + 'px',
+              'transform': 'rotate('+image_rotation+'deg)',
+            });
+            
+            let img_transverse = Math.sqrt( (new_sni_height/2)^2 + (new_sni_width/2)^2 );
+
+            top_offset = img_transverse * Math.sin(image_rotation);
+            left_offset = img_transverse * Math.cos(image_rotation);
+            new_top_withoffset = new_top + top_offset;
+            new_left_withoffset = new_sni_width/2 - left_offset;
+          }
 
           console.log('--------------------- Image Scaling Started ------------------');
           console.log('width & height ratio:'+ratio);
@@ -553,6 +596,12 @@ function modal_msg(title, mbody){
           console.log(original_sni_position);
           console.log('New sni Position:');
           console.log( on_image.position() );
+          console.log('--- Rotation ---');
+          console.log('image rotation:'+image_rotation);
+          console.log('top offest:'+top_offset);
+          console.log('left offest:'+left_offset);
+          console.log('new top with offset:'+new_top_withoffset);
+          console.log('new left with offset:'+new_left_withoffset);
           console.log('--------------------- Image Scaling Finished for image ------------------');
 
           
@@ -561,6 +610,21 @@ function modal_msg(title, mbody){
         }
       }
       
+      function getRotationDegrees(obj) {
+        var matrix = obj.css("-webkit-transform") ||
+        obj.css("-moz-transform")    ||
+        obj.css("-ms-transform")     ||
+        obj.css("-o-transform")      ||
+        obj.css("transform");
+        if(matrix !== 'none') {
+            var values = matrix.split('(')[1].split(')')[0].split(',');
+            var a = values[0];
+            var b = values[1];
+            var angle = Math.round(Math.atan2(b, a) * (180/Math.PI));
+        } else { var angle = 0; }
+        //return (angle < 0) ? angle + 360 : angle;
+        return angle;
+    }
 
 
        /**
@@ -573,53 +637,97 @@ function modal_msg(title, mbody){
 
           html2canvas( document.getElementById('temp_div').getElementsByClassName('print_image_holder')[0], {
             //dpi: 300, // Set to 300 DPI
-            //scale: 1, // Adjusts your resolution
-            //allowTaint: true,
+            scale: 1, // Adjusts your resolution
+            allowTaint: true,
             logging: true,
-            width:1230.08,
-            height:685.412,
-            //useCORS:true,
+           // width:1230.08,
+           // height:685.412,
+            useCORS:true,
             //windowWidth:1230.08,
             //windowHeight:685.412,
             //letterRendering: 1,
-            scrollX:0,
-            scrollY:0,
+           // scrollX:0,
+           // scrollY:0,
             imageTimeout:0
           }).then(function(canvas){
             console.log('canvas image rendered for imageid: '+image_element);
             let img = canvas.toDataURL("image/jpeg", 1);
             //$('#print_imgid_'+image_element).find('.print_sn_image').remove();
-            $('#print_imgid_'+image_element).css({
+
+            /*
+            if ( is_iOS() ){
+              console.log('ios device detected...');
+            $('#print_imgid_'+image_element).html('');
+            $('#print_imgid_'+image_element).append('<img src="'+img+'" class="fullwidthimgs" style="position:absolute; width:100%; max-width:100%; height:auto;" />');
+            }else{
+              console.log('Non ios device detected...');
+              $('#print_imgid_'+image_element).css({
                 'background-image':'url('+img+')',
                 'background-size':'contain'
+              });
+            }
+            */
+
+            $('#print_imgid_'+image_element).children('img').eq(0).remove();
+            let append_img = $('<img src="'+img+'" class="fullwidthimgs" style="position:absolute; width:100%; max-width:100%; height:auto;" />');
+            $('#print_imgid_'+image_element).append(append_img);
+
+            $('#hidden_canvas').css({
+             // width:'10px',
+              //height:'10px',
             });
 
             //Removing Temp Div
-            $('#temp_div').remove();
-            images_processed++;
-            process_images();
+            //$('#temp_div').remove();
+
             console.log('--------------------- Image individual rendering Finished ------------------');
+
+            //Calling next image for processing
+           // $('#print_imgid_'+image_element).find('.fullwidthimgs').eq(0).load(function(){
+              images_processed++;
+              iterate_process_images(images_processed);
+            //});
+            
           }); 
         }
 
+        iterate_process_images(0); // Initiate Process Images
 
 
-
-
-
-
-
+        function is_iOS() {
+          return [
+            'iPad Simulator',
+            'iPhone Simulator',
+            'iPod Simulator',
+            'iPad',
+            'iPhone',
+            'iPod'
+          ].includes(navigator.platform)
+          // iPad on iOS 13 detection
+          || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+        }
 
 
       function generate_output_pdf(){
         var w = 2480;
         var h = 2480*1.41;
-        
-        
+
+        /*
+        $('#hidden_canvas').css({
+          'top':'0',
+          'height':'100%',
+          'width':'100%',
+        });
+      */
+        $('#hidden_canvas').css({
+          width:'100%',
+          height:'100%',
+        });
+
         html2canvas(document.getElementById('print_canvas'), {
           dpi: 300, // Set to 300 DPI
           scale: 1, // Adjusts your resolution
-          //allowTaint: true,
+          allowTaint: true,
           logging: true,
           width:2480,
           height:3497,
@@ -627,19 +735,30 @@ function modal_msg(title, mbody){
           windowWidth:2480,
           windowHeight:3497,
           //letterRendering: 1,
-          //scrollX:0,
-          //scrollY:0,
+          scrollX:0,
+          scrollY:0,
           imageTimeout:0
         }).then(function(canvas){
           console.log('canvas image rendered');
           var img = canvas.toDataURL("image/jpeg", 1);
-          $('body').append('<img src="'+img+'" style="position:absolute; top:200vw; width:100%;" />');
-
+          //$('body').append('<img src="'+img+'" style="position:absolute; top:200vw; width:100%;" />');
+          let { jsPDF } = window.jspdf;
           var doc = new jsPDF('p', 'mm', [210, 297]);
           doc.addImage(img, 'png', 20, 22, 170, 253);
-          doc.save('stricker_print.pdf'); 
+          
+          $('#hidden_canvas').css({
+            'top':'100vw',
+            'height':'10px',
+            'width':'10px',
+          });
 
+          doc.save('printready_sticker.pdf');
+
+          $('.print_status span').html('High Resolution image generated. <br> Creating PDF File...');
           $('#printing_message').modal('hide');
+          //var win = window.open("", "_blank");
+                  //win.document.write("<html><head><title>Generated PDF</title></head><body><embed style='width:100%; height:100%;' src='" +doc.output('datauri').replace('data:application/pdf;filename=generated.pdf;base64','data:application/octet-stream;filename=generated.pdf;base64') + "'></embed></body></html>");
+            //doc.output('dataurlnewwindow');          
         }); 
         
 

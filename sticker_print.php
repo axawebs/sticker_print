@@ -127,6 +127,16 @@ class stickerprint
     }
 
     //Enqueue on all other pages
+    function add_type_attribute($tag, $handle, $src) {
+        // if not your script, do nothing and return original $tag
+        if ( 'stickerprint_jspdf_scripts' !== $handle ) {
+            return $tag;
+        }
+        // change the script tag by adding type="module" and return it.
+        $tag = '<script type="module" src="' . esc_url( $src ) . '"></script>';
+        return $tag;
+    }
+
     function enqueue(){ 
 
         //Load only on page id = 2
@@ -134,6 +144,7 @@ class stickerprint
         $post_slug = $post->post_name;
         //echo($post_slug);
         if ( $post_slug=="stickerprint" || true ){
+            //add_filter('script_loader_tag', 'add_type_attribute' , 10, 3);
             //Bootstrap
             wp_enqueue_style( 'bootstrap4_css', plugins_url('/assets/bootstrap4/bootstrap_4_5_2_min.css',__FILE__),80);
             wp_enqueue_script( 'bootstrap_bundle_scripts', plugins_url('/assets/bootstrap4/bootstrap.bundle.min.js',__FILE__), array('jquery'));
@@ -158,7 +169,8 @@ class stickerprint
             wp_enqueue_style( 'stickerprint_printjs_styles', plugins_url('/assets/printjs/print.min.css',__FILE__),98);
             //wp_enqueue_script( 'stickerprint_printjs_scripts', plugins_url('/assets/printjs/print.min.js',__FILE__), array('jquery'));
             //wp_enqueue_script( 'stickerprint_printjs_scripts', plugins_url('/assets/printjs/printThis.js',__FILE__), array('jquery'));
-            wp_enqueue_script( 'stickerprint_jspdf_scripts', plugins_url('/assets/printjs/jspdf.js',__FILE__), array('jquery'));
+            wp_enqueue_script( 'stickerprint_jspdf_scripts', 'https://unpkg.com/jspdf@latest/dist/jspdf.umd.min.js', array('jquery'));
+            
 
             //HTML2CANVAS
             wp_enqueue_script( 'stickerprint_html2canvas_scripts', plugins_url('/assets/html2canvas/html2canvas.js',__FILE__), array('jquery'));

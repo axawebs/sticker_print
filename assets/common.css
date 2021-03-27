@@ -313,10 +313,7 @@
     }
 
     .image_on_edit .sn_image {
-        border: dashed 3px #f00;
-        padding: 4px;
-        border-radius: 4px;
-        height: auto;
+        outline: dashed 2px #f00;
     }
 
     .image_on_edit .sticker_image_holder{
@@ -410,21 +407,21 @@
 
 
     .ui-resizable-se{
-    bottom:0px;
-    right:0px;
+    bottom:-12px;
+    right:-12px;
     }
 
     .ui-resizable-sw{
-    bottom:0px;
-    left:-15px;
+    bottom:-12px;
+    left:-12px;
     }
     .ui-resizable-nw{
     top:-12px;
-    left:-14px;
+    left:-12px;
     }
     .ui-resizable-ne{
-    top:-14px;
-    right:0px;
+    top:-12px;
+    right:-12px;
     }
 
 
@@ -515,8 +512,8 @@
     width: 10px; 
     /**/
     overflow: scroll;
-    z-index: 999999;
-    background-color: red;
+    z-index: 999998;
+    background-color: #fff;
 }
 
 
@@ -536,7 +533,7 @@
     height: 19.6%;
     overflow: hidden !important;
     margin: .355% .4%;
-    background-color: #ccc;
+    background-color: transparent;
 }
     .print_section:nth-child(1),
     .print_section:nth-child(2){
@@ -582,9 +579,14 @@ body{
     height: auto;
     overflow: scroll;
 }
-
-#temp_div img{
-    
+#temp_div .print_image_holder{
+    position: absolute;
+    width: 1230.08px;
+    max-width: 1230.08px;
+    height:685.412px;
+    max-height:685.412px;
+    overflow: scroll;
+    z-index: 99999;
 }
 
 img#loading_image {
@@ -602,4 +604,8 @@ img#loading_image {
     padding: 5px;
     background-color: #eee;
     margin-top: 50px;
+}
+
+#printing_message{
+    z-index: 999999;
 }
