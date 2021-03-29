@@ -182,7 +182,8 @@ class stickerprint
             wp_enqueue_style( 'stickerprint_common_styles', plugins_url('/assets/common.css',__FILE__),101);
 
             //FrontEnd scripts and styles
-            wp_enqueue_script( 'stickerprint_script', plugins_url('/assets/stickerprint_scripts.js',__FILE__), array('stickerprint_heic2any_scripts','stickerprint_html2canvas_scripts','stickerprint_jspdf_scripts','stickerprint_dropzone_scripts','jquery'));
+            wp_enqueue_script( 'print_sticker_script', plugins_url('/assets/print_sticker.js',__FILE__), array('jquery'));
+            wp_enqueue_script( 'stickerprint_script', plugins_url('/assets/stickerprint_scripts.js',__FILE__), array('stickerprint_heic2any_scripts','stickerprint_html2canvas_scripts','stickerprint_jspdf_scripts','stickerprint_dropzone_scripts','print_sticker_script','jquery'));
         }
     }
 
