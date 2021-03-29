@@ -178,9 +178,12 @@ if (! defined( 'ABSPATH') ){
   </div>
 </div>
 
+<!--
     <div id="temp_div">
       <div class="print_image_holder">
         <img class="print_sn_image"/>
       </div>
     </div>
+    -->
+    <div id="prnt_temp_div"></div>
 </div>

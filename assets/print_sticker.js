@@ -18,7 +18,7 @@
 
   //Printing starts on click
 function print_sticker(){
-    (function($) {
+   // (function($) {
         //--- jQuery No Conflict
 
         function modal_msg(title, mbody){
@@ -103,6 +103,8 @@ function print_sticker(){
           if ( typeof source_styles === 'undefined' || source_styles == ''){ source_styles = '';}
 
           $('#temp_div').css('display','block');
+          $('#temp_div .print_image_holder').remove();
+          $('#temp_div').append('<div class="print_image_holder"><img class="print_sn_image"/></div>');
           $('#temp_div img').attr('src','');
           $('#temp_div img').off().on('load',function(){
               console.log('Image loaded to the temp div for'+i);
@@ -164,6 +166,12 @@ function print_sticker(){
 
                 //If rotation applied 
                 if( image_rotation!=0 ){
+
+                    if(new_top != 0 || new_left !=0){
+                        on_image.css({
+                            'transform-origin':new_sni_width/2+'px '+new_sni_height/2+'px',
+                        });
+                    }
 
                     on_image.css({
                     'position':'absolute',
@@ -346,6 +354,6 @@ function print_sticker(){
       
     });
       //--- jQuery No Conflict
-})(jQuery);
+//})(jQuery);
 }
 
