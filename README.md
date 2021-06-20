@@ -1,6 +1,5 @@
-# Sticker Print Plugin
-### Developer:  ChandimaJ _(chandimaj@icloud.com)_
+# Image collage plugin for A4 print
 
 <br>
 
-## Download the repo and save it in your wordpress plugins folder
+A wordpress plugin to design a print ready 5X2 image collage.
